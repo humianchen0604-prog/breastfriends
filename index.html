@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Breast Friends Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Gurmukhi:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* PP Pangram Sans: installed copy first, then the private deployment's font files. /fonts is served only behind the site password (middleware.js). */
+@font-face{font-family:Pangram;font-weight:500;src:local("PP Pangram Sans Medium"),local("PPPangramSans-Medium"),url("fonts/PPPangramSans-Medium.otf") format("opentype");font-display:swap}
+@font-face{font-family:Pangram;font-weight:600;src:local("PP Pangram Sans Semibold"),local("PPPangramSans-Semibold"),url("fonts/PPPangramSans-Semibold.otf") format("opentype");font-display:swap}
+@font-face{font-family:Pangram;font-weight:700;src:local("PP Pangram Sans Bold"),local("PPPangramSans-Bold"),url("fonts/PPPangramSans-Bold.otf") format("opentype");font-display:swap}
+@font-face{font-family:PangramCompact;font-weight:400;src:local("PP Pangram Sans Compact Regular"),local("PPPangramSans-CompactRegular"),url("fonts/PPPangramSans-CompactRegular.otf") format("opentype");font-display:swap}
+:root{
+  --sand:#f4f1ec;--pearl:#fff;--nightfall:#1d2567;--ink-slate:#6b6f92;--bar-idle:#c9c3d3;
+  --red:#fb4238;--red-soft:#fe6057;--lime:#f0fdb5;--sky:#dceff8;--mist:#c4d5f8;--peri:#9faff8;--cream-card:#eff1b6;
+  --ease:cubic-bezier(.32,.72,0,1);
+  --pg:Pangram,"Noto Sans Gurmukhi","Gurmukhi MN",Inter,system-ui,sans-serif;
+  --in:Inter,"Noto Sans Gurmukhi","Gurmukhi MN",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#e6e2da;color:var(--nightfall);font-family:var(--pg);font-weight:500}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+button:focus-visible,input:focus-visible{outline:2px solid var(--peri);outline-offset:2px}
+img{display:block}
+.static *{animation:none!important;transition:none!important}
+
+/* phone */
+.phone{position:relative;width:390px;height:844px;border:1px solid rgba(0,0,0,.2);border-radius:48px;overflow:hidden;background:var(--sand);flex:none}
+.frame-only{background:transparent}
+.layer{position:absolute;inset:0}
+.abs{position:absolute}
+.nowrap{white-space:nowrap}
+.scroll{position:absolute;left:0;right:0;bottom:0;overflow-y:auto;scrollbar-width:none;overscroll-behavior:contain}
+.scroll::-webkit-scrollbar{display:none}
+.push{animation:push .34s var(--ease)}
+.rise{animation:rise .4s var(--ease)}
+@keyframes push{from{transform:translateX(28px);opacity:0}}
+@keyframes rise{from{transform:translateY(60px);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* app header */
+.apphead{position:absolute;left:15px;right:15px;top:59px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.apphead h1{flex:1;min-width:0;font-size:24px;font-weight:700;white-space:nowrap}
+.apphead .acts{display:flex;gap:12px}
+.iconbtn{position:relative;width:28px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:26px;transition:transform .16s ease}
+.iconbtn::after{content:"";position:absolute;inset:0 -6px}
+.iconbtn:active,.press:active{transform:scale(.96)}
+.press{transition:transform .16s ease}
+
+/* tab + play bar */
+.tabbar{position:absolute;left:50%;transform:translateX(-50%);top:760px;width:200px;height:60px;padding:0 12px;background:var(--pearl);border-radius:999px;display:flex;align-items:center;justify-content:space-between;z-index:5}
+.tab{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:22px}
+.tab.on{background:var(--nightfall)}
+.playbar{position:absolute;left:15px;top:685px;width:358px;padding:12px;display:flex;align-items:center;justify-content:space-between;background:var(--pearl);border:.5px solid rgba(0,0,0,.1);border-radius:999px;filter:drop-shadow(0 0 10px rgba(0,0,0,.08));z-index:4}
+.playbar .info{position:relative;width:222px;height:38px;display:block}
+.playbar .av{position:absolute;left:-2px;top:-1px}
+.playbar .tt{position:absolute;left:43.5px;top:.5px;width:204px}
+.playbar b{display:block;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.playbar small{display:block;margin-top:2px;font:400 14px PangramCompact,var(--pg);color:var(--ink-slate)}
+.playbar .ctl{display:flex;gap:8px}
+
+/* avatars */
+.av{position:relative;border-radius:999px;overflow:hidden;flex:none}
+.av img{position:absolute;max-width:none}
+
+/* home */
+.stack{padding:0 15px 180px}
+.stack h2{font-size:20px;font-weight:700;text-transform:uppercase;margin-bottom:16px}
+.tcard{position:relative;display:block;width:100%;height:100px;margin-bottom:8px;padding:28px 16px;border-radius:24px;overflow:hidden}
+.tcard b{display:block;font-size:20px;font-weight:700;letter-spacing:-.2px;text-transform:uppercase;white-space:nowrap}
+.tcard span.n{display:block;margin-top:4px;font-size:14px;font-weight:600;letter-spacing:1.96px;white-space:nowrap}
+.shape{position:absolute;display:flex;align-items:center;justify-content:center;container-type:size}
+.shape i{display:block;flex:none;width:100cqh;height:100cqw;position:relative}
+.shape img{width:100%;height:100%}
+
+/* events */
+.loc{position:absolute;left:15px;top:113px;display:inline-flex;align-items:center;gap:3px;font-size:16px;font-weight:600;white-space:nowrap}
+.day{font-size:16px;font-weight:600;height:30px;white-space:nowrap}
+.day em{font-style:normal;opacity:.6;margin-left:5px}
+.ev{position:relative;display:block;width:355px;height:251px;border-radius:24px;overflow:hidden}
+.ev .ph{position:absolute;left:0;top:0;width:100%;height:153.5px;object-fit:cover;border-radius:16px 16px 0 0}
+.ev .ov{position:absolute}
+.ev .tx{position:absolute;left:16px;top:166px;right:12px}
+.ev .tx b{display:block;font-size:20px;font-weight:700;white-space:nowrap;margin-bottom:8px}
+.meta{display:flex;align-items:center;gap:4px;height:16px;font-size:14px;font-weight:500;white-space:nowrap;margin-bottom:4px}
+.meta span{opacity:.8}
+.badge{position:absolute;left:12px;top:12px;height:32px;padding:0 12px 0 8px;border-radius:999px;background:var(--lime);color:var(--nightfall);font-size:14px;font-weight:600;display:flex;align-items:center;gap:4px;z-index:2}
+
+/* topic */
+.bar-head{position:absolute;left:15px;top:60px;width:358px;height:28px;display:flex;align-items:center;gap:4px}
+.bar-head b{flex:1;font-size:20px;font-weight:700;white-space:nowrap}
+.hero-topic{position:absolute;left:15px;top:108px;width:358px;padding:28px 16px;border-radius:20px;background:var(--red);overflow:hidden;color:var(--sand)}
+.hero-topic b{display:block;font:700 24px var(--in);letter-spacing:-.24px;text-transform:uppercase;color:#fff;white-space:nowrap}
+.hero-topic span{display:block;margin-top:4px;font:400 15px var(--in);white-space:nowrap}
+.row{display:flex;align-items:center;gap:14px;width:100%;padding:12px 14px;background:var(--pearl);border-radius:20px;margin-bottom:10px}
+.row .t{flex:1;min-width:0}
+.row .t b{display:block;font:700 16px var(--in);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .t span{display:block;margin-top:2px;font:400 14px var(--in);color:var(--ink-slate);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .d{font:400 12px var(--in);color:var(--ink-slate);white-space:nowrap}
+
+/* player */
+.ph-head{position:absolute;left:23px;right:23px;top:59px;height:40px;display:flex;align-items:center;justify-content:space-between}
+.ph-head .l{width:68px;height:40px;display:flex;align-items:center}
+.ph-head .r{display:flex;gap:20px;align-items:center}
+.switch{display:flex;align-items:center;gap:4px;padding:8px;border-radius:12px;color:var(--sand);font-size:14px;font-weight:600;white-space:nowrap}
+.down{transform:rotate(-90deg)}
+.vid{position:absolute;left:23px;top:181px;width:342px;height:280px;border-radius:20px;overflow:hidden}
+.vid img{width:100%;height:100%;object-fit:cover}
+.vid::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.4),transparent 16.2%)}
+.vid p{position:absolute;left:12px;right:12px;bottom:14px;text-align:center;color:var(--sand);font-size:16px;font-weight:700;z-index:1}
+.ts-card{position:absolute;left:23px;top:115px;width:342px;height:407px;background:var(--sand);border-radius:20px;overflow:hidden}
+.ts-card .q{position:absolute;left:256px;top:0;width:88px;height:88px;mix-blend-mode:overlay}
+.ts{position:absolute;left:16px;top:24px;width:310px;height:359px;overflow-y:auto;scrollbar-width:none;font-size:24px;font-weight:600;color:rgba(29,37,103,.4)}
+.ts::-webkit-scrollbar{display:none}
+.ts p{min-height:29px}.ts .on{color:var(--nightfall)}
+.ts-card .fade{position:absolute;left:0;top:323px;width:342px;height:84px;background:linear-gradient(to bottom,rgba(244,241,236,0),var(--sand));pointer-events:none}
+.pinfo{position:absolute;left:23px;top:542px;color:var(--sand)}
+.pinfo h2{font-size:22px;font-weight:700;white-space:nowrap}
+.pinfo div{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px;white-space:nowrap}
+.pinfo b{font-weight:600}.pinfo span{color:rgba(244,241,236,.6)}
+.track{position:absolute;left:23px;top:629px;width:342px;height:48px;padding:0 12px 8px;display:flex;align-items:flex-end;justify-content:space-between;background:rgba(244,241,236,.1);border-radius:16px;overflow:hidden}
+.track i{display:block;width:4px;border-radius:2px;background:rgba(244,241,236,.28)}
+.track i.p{background:var(--lime)}
+.track u{position:absolute;left:17px;top:4px;bottom:4px;width:2px;border-radius:1px;background:var(--lime)}
+.times{position:absolute;left:23px;top:685px;width:342px;padding:0 4px;display:flex;justify-content:space-between;font:600 13px var(--in);color:rgba(244,241,236,.4)}
+.ctrl{position:absolute;left:0;right:0;top:721px;display:flex;justify-content:center;gap:40px}
+
+/* search */
+.field{position:absolute;left:15px;top:123px;width:358px;height:52px;padding:0 14px;display:flex;align-items:center;gap:10px;background:var(--pearl);border-radius:999px;border:1.5px solid transparent;transition:border-color .16s ease}
+.field:focus-within{border-color:var(--nightfall)}
+.field input{flex:1;min-width:0;height:100%;border:0;outline:0;background:none;font:600 16px var(--pg);color:var(--nightfall)}
+.field input::placeholder{color:var(--ink-slate);font-weight:500}
+.sec{font-size:16px;line-height:20px;font-weight:600;margin:0 0 10px;white-space:nowrap}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{height:40px;padding:0 16px;display:inline-flex;align-items:center;background:var(--pearl);border-radius:999px;font-size:14px;font-weight:600;white-space:nowrap}
+.chip.on{background:var(--nightfall);color:var(--sand)}
+.fchips{position:absolute;left:0;right:0;top:187px;display:flex;gap:8px;padding:0 15px;overflow-x:auto;scrollbar-width:none}
+.fchips::-webkit-scrollbar{display:none}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 8px}
+.tile{position:relative;height:96px;padding:18px 14px;border-radius:24px;overflow:hidden;display:block}
+.tile b{display:block;position:relative;z-index:1;font-size:15px;font-weight:700;text-transform:uppercase;line-height:1.15;letter-spacing:-.15px}
+.tile .c{display:block;position:relative;z-index:1;margin-top:4px;font-size:12px;font-weight:600;letter-spacing:1.4px}
+mark{background:var(--lime);color:var(--nightfall);border-radius:4px;padding:0 2px}
+.res-t{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border-radius:20px;margin-bottom:8px}
+.res-t b{display:block;font-size:18px;line-height:23px;font-weight:700;white-space:nowrap}
+.res-t span{display:block;font-size:14px;line-height:18px;font-weight:500;opacity:.8}
+.res-t span span{margin-top:2px}
+.quote{display:block;width:100%;padding:14px;background:var(--pearl);border-radius:20px;margin-bottom:10px}
+.quote p{font-size:16px;font-weight:600;line-height:1.3}
+.quote div{display:flex;align-items:center;gap:8px;margin-top:10px;font:400 13px var(--in);color:var(--ink-slate)}
+.thumb{width:52px;height:52px;border-radius:16px;object-fit:cover;flex:none}
+.empty{position:absolute;left:16px;right:16px;top:232px;text-align:center}
+.empty h2{font-size:22px;font-weight:700;margin:0 0 8px;line-height:28px}
+.empty p{font-size:15px;color:var(--ink-slate);line-height:19px;margin-bottom:28px}
+.empty .chips{justify-content:center}
+
+/* sheets */
+.scrim{position:absolute;inset:-1px;background:rgba(0,0,0,.6);z-index:10;animation:fade .28s ease}
+@keyframes fade{from{opacity:0}}
+.sheet{position:absolute;left:-1px;width:390px;bottom:-1px;background:var(--sand);border-radius:24px 24px 0 0;z-index:11;animation:up .42s var(--ease);padding-bottom:40px;display:flex;flex-direction:column}
+.sheet.closing{transform:translateY(105%);transition:transform .26s ease-in}
+@keyframes up{from{transform:translateY(100%)}}
+.grab{height:50px;flex:none;position:relative;cursor:grab;touch-action:none}
+.grab::after{content:"";position:absolute;left:175px;top:12px;width:40px;height:6px;border-radius:999px;background:#000;opacity:.2}
+.sheet h2{padding:0 23px;font-size:22px;font-weight:700;white-space:nowrap}
+.sheet .sub{padding:4px 23px 0;font-size:15px;color:var(--ink-slate);line-height:1.35}
+.sheet .body{padding:16px 16px 0}
+.sheet .inner-scroll{overflow-y:auto;scrollbar-width:none;touch-action:pan-y}
+.sheet .inner-scroll::-webkit-scrollbar{display:none}
+.tick{width:24px;height:24px;border-radius:50%;border:2px solid var(--bar-idle);flex:none}
+.tick.on{border:0;background:var(--nightfall);display:flex;align-items:center;justify-content:center}
+.lang-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex:none}
+.seg{display:flex;height:44px;padding:4px;background:var(--pearl);border-radius:999px;margin-bottom:12px}
+.seg button{flex:1;border-radius:999px;text-align:center;font-size:14px;font-weight:600;transition:background .18s ease,color .18s ease}
+.seg .on{background:var(--nightfall);color:var(--sand)}
+.card-share{position:relative;min-height:172px;padding:20px;background:var(--red);color:var(--sand);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+.card-share .mini{margin-top:auto}
+.card-share .q{position:absolute;right:-28px;top:-20px;width:146px;height:146px;opacity:.5}
+.who{position:relative;display:flex;align-items:center;gap:8px;font-size:14px;white-space:nowrap}
+.who b{font-weight:600}.who span{opacity:.75}
+.card-share h3{position:relative;margin:14px 0 16px;font-size:24px;font-weight:700;line-height:1.14}
+.mini{position:relative;display:flex;align-items:center;gap:10px;font:600 13px var(--in)}
+.mini div{display:flex;align-items:flex-end;gap:3px;height:24px}
+.mini i{display:block;width:3px;border-radius:2px;background:var(--lime)}
+.mini i.off{background:rgba(244,241,236,.32)}
+.chan{display:flex;gap:8px;margin:20px -16px 0;padding:0 16px;overflow-x:auto;scrollbar-width:none;cursor:grab}
+.chan::-webkit-scrollbar{display:none}
+.chan button{flex:none;width:72px;text-align:center;font-size:13px;font-weight:500;white-space:nowrap}
+.chan span{display:flex;align-items:center;justify-content:center;width:64px;height:64px;margin:0 auto 8px;border-radius:50%;overflow:hidden;background:var(--pearl);transition:transform .16s ease}
+.chan img{display:block;width:64px;height:64px;pointer-events:none}
+.chan button:active span{transform:scale(.94)}
+.cta{display:flex;width:100%;height:56px;align-items:center;justify-content:center;gap:8px;background:var(--nightfall);color:var(--sand);border-radius:999px;font-size:16px;font-weight:700;white-space:nowrap}
+.cta.lime{background:var(--lime);color:var(--nightfall)}
+.cta.white{background:var(--pearl);color:var(--nightfall)}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:44px;height:44px;border-radius:50%;background:var(--sand);text-align:center;font-size:22px;font-weight:600}
+.step button:disabled{cursor:default}
+.step b{width:28px;text-align:center;font-size:18px;font-weight:700}
+.panel{background:var(--pearl);border-radius:20px;padding:16px;margin-bottom:10px}
+.panel h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.panel p{font-size:15px;line-height:1.4;color:var(--ink-slate)}
+.li{display:flex;gap:10px;align-items:flex-start;font-size:15px;color:var(--nightfall);line-height:1.3;margin-top:10px}
+.li:first-of-type{margin-top:0}
+.li svg{flex:none;margin-top:1px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.facts div{padding:14px 12px 16px;border-radius:20px;background:var(--pearl)}
+.facts img{display:block;margin-bottom:14px}
+.facts b{display:block;font-size:18px;line-height:23px;font-weight:700;white-space:nowrap}
+.facts span{display:block;margin-top:2px;font-size:13px;line-height:16px;color:var(--ink-slate);white-space:nowrap}
+.cta-bar{position:absolute;left:0;right:0;bottom:0;height:128px;padding:44px 16px 0;background:linear-gradient(to bottom,rgba(244,241,236,0),var(--sand) 34%);z-index:4}
+.toast{position:absolute;left:50%;top:62px;transform:translateX(-50%);height:44px;padding:0 18px;display:flex;align-items:center;gap:8px;background:var(--nightfall);color:var(--sand);border-radius:999px;font-size:14px;font-weight:600;white-space:nowrap;z-index:30;animation:toast .32s var(--ease)}
+@keyframes toast{from{transform:translate(-50%,-24px);opacity:0}}
+
+/* review shell */
+.shell{min-height:100%;padding:20px 28px 56px}
+.topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px 16px;margin-bottom:24px}
+.tools{display:flex;flex-wrap:wrap;gap:8px}
+.topbar h1{font-size:20px;font-weight:700}
+.view{display:flex;padding:3px;border-radius:999px;background:#d8d3c9}
+.view button{height:34px;padding:0 14px;white-space:nowrap;border-radius:999px;font-size:14px;font-weight:600}
+.view .on{background:var(--pearl)}
+.group{margin-bottom:36px}
+.group>h2{font-size:16px;font-weight:700;margin-bottom:14px}
+.group>h2 span{font-weight:500;color:var(--ink-slate);margin-left:8px}
+.board{display:flex;flex-wrap:wrap;gap:24px}
+.fr{position:relative;width:234px;display:block}
+.fr .cap{display:block;margin-bottom:8px;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fr .box{display:block;position:relative;width:234px;height:507px;border-radius:29px;overflow:hidden}
+.fr iframe{width:390px;height:844px;border:0;transform:scale(.6);transform-origin:0 0;pointer-events:none;background:transparent}
+.fr:hover .box{box-shadow:0 0 0 2px var(--nightfall)}
+.proto{display:grid;grid-template-columns:210px minmax(0,1fr);gap:32px;align-items:start}
+.proto .stage{justify-self:center}
+.rail{width:210px;flex:none}
+.rail h2{font-size:13px;font-weight:700;margin:0 0 6px;color:var(--ink-slate)}
+.rail ul{list-style:none;padding:0;margin:0 0 18px -10px}
+.rail button{display:block;width:100%;padding:7px 10px;border-radius:10px;font-size:14px;font-weight:600}
+.rail button:hover{background:#dcd7cd}
+.rail .on{background:var(--nightfall);color:var(--sand)}
+.stage{flex:none}
+/* phone bezel, Clickable view only */
+.stage{padding:0 4px}
+.device{position:relative;width:418px;height:876px;padding:5px;border-radius:72px;background:linear-gradient(145deg,#ded4e8,#b9a9ca 22%,#e6deee 50%,#b3a3c5 78%,#d6cbe1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),inset 0 0 0 2px rgba(120,100,145,.25)}
+.bez{position:relative;width:408px;height:866px;padding:9px;border-radius:67px;background:#000}
+.device .phone{border:0;height:848px;border-radius:58px}
+.device .sheet{left:0}
+.island{position:absolute;left:50%;top:23px;width:120px;height:35px;margin-left:-60px;border-radius:18px;background:#000;z-index:40;pointer-events:none}
+.island::after{content:"";position:absolute;right:10px;top:11px;width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#2b2f7a 0,#14143c 45%,#050509 75%)}
+.hw{position:absolute;width:3px;background:linear-gradient(to bottom,#cdbfda,#a897bb 50%,#cdbfda)}
+.hw.l{left:-3px;border-radius:2px 0 0 2px}
+.hw.r{right:-3px;border-radius:0 2px 2px 0}
+@media (max-width:760px){.proto{display:flex;justify-content:center}.shell{padding:16px}.rail{display:none}.fr{width:calc(50% - 12px)}.board{gap:16px 12px}.fr .box{width:100%}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+/* ---------- content ---------- */
+const STR={
+en:{hello:'Breast Friends',mam:'Mammogram screening',stories:n=>`${n} stories`,women:n=>`${n} women answered`,clips:n=>`${n} clips`,
+ hurt:'Does it hurt?',family:'Family & kids',cost:'How much it costs',costQ:'How much it costs?',getting:'Getting there',after:'After the result',all:'All stories',
+ topicL:'Topic: ',events:'Events and Workshops',miles:'miles',today:'Today',sun:'Sunday',sat:'Saturday',nov8:'Nov 8',nov9:'Nov 9',
+ center:'Art and Spirituality Center',toAudio:'Switch to audio',toVideo:'Switch to video',ep:'Does a mammogram hurt?',playlist:'Playlist',
+ language:'Language',langSub:'Used for the app, stories, and captions.',changed:'Language changed to English',
+ search:'Search',ph:'Search stories, people, events',recent:'Recent',browse:'Browse topics',clear:'Clear search',fAll:'All',fTopics:'Topics',fStories:'Stories',fMoments:'In the stories',fEvents:'Events',
+ noneT:q=>`Nothing for “${q}” yet`,noneB:'Try a shorter word, or start with one of these.',tryA:'hurt',tryB:'cost',tryC:'ride',recentA:'does it hurt',recentB:'free mammogram',recentC:'ride to clinic',
+ shareTitle:'Share this story',shareEvent:'Share this workshop',whole:'Whole story',moment:'This moment',msg:'Messages',wa:'WhatsApp',copy:'Copy link',copied:'Copied',fb:'Facebook',ig:'Instagram',linkCopied:'Link copied',opening:c=>`Opening ${c}`,
+ workshop:'Workshop',free:'Free',cost2:'to attend',min:'90 min',len:'hands-on',spots:n=>`${n} spots`,left:'still open',about:'About',aboutB:'Make something by hand alongside other women in the Breast Friends community. No art experience needed. Come as you are and take your time.',know:'Good to know',k1:'All supplies are provided',k2:'Bring a friend or caregiver',k3:'Spanish interpreter on site',host:'Your host',hear:"Hear Elena's story",where:'Where',away:'Bakersfield · 40 miles away',dirs:'Get directions',save:'Save my spot',going:"You're going",goingB:'Going',
+ rsvp:'Save your spot',howMany:'How many are coming?',inclYou:'Including you',interp:'Need an interpreter?',none:'No',confirm:'Confirm my spot',inT:"You're in!",inB:(d,t)=>`${d} at ${t}`,addCal:'Add to calendar',done:'Done',calAdded:'Added to calendar',dirOpen:'Opening directions',
+ locT:'Find events near',radius:'Distance',show:'Show events',back:'Back',close:'Close',share:'Share',list:'Playlist',play:'Play',pause:'Pause',heart:'Save',more2:'More options',globe:'Change language',back10:'Back 10 seconds',fwd10:'Forward 10 seconds',home:'Home',myScr:'Events',
+ caption:'For some women, it hurts a little.'},
+es:{hello:'Breast Friends',mam:'Mamografía',stories:n=>`${n} historias`,women:n=>`${n} mujeres respondieron`,clips:n=>`${n} clips`,
+ hurt:'¿Duele?',family:'Familia e hijos',cost:'Cuánto cuesta',costQ:'¿Cuánto cuesta?',getting:'Cómo llegar',after:'Tras el resultado',all:'Todas',
+ topicL:'Tema: ',events:'Eventos y talleres',miles:'millas',today:'Hoy',sun:'domingo',sat:'sábado',nov8:'8 nov',nov9:'9 nov',
+ center:'Centro de Arte y Espiritualidad',toAudio:'Cambiar a audio',toVideo:'Cambiar a video',ep:'¿Duele una mamografía?',playlist:'Lista',
+ language:'Idioma',langSub:'Para la app, las historias y los subtítulos.',changed:'Idioma cambiado a español',
+ search:'Buscar',ph:'Busca historias, personas, eventos',recent:'Recientes',browse:'Explorar temas',clear:'Borrar búsqueda',fAll:'Todo',fTopics:'Temas',fStories:'Historias',fMoments:'En las historias',fEvents:'Eventos',
+ noneT:q=>`Aún no hay nada para “${q}”`,noneB:'Prueba una palabra más corta o empieza con una de estas.',tryA:'duele',tryB:'cuesta',tryC:'llegar',recentA:'¿duele?',recentB:'mamografía gratis',recentC:'transporte a la clínica',
+ shareTitle:'Compartir esta historia',shareEvent:'Compartir este taller',whole:'Historia completa',moment:'Este momento',msg:'Mensajes',wa:'WhatsApp',copy:'Copiar',copied:'Copiado',fb:'Facebook',ig:'Instagram',linkCopied:'Enlace copiado',opening:c=>`Abriendo ${c}`,
+ workshop:'Taller',free:'Gratis',cost2:'la entrada',min:'90 min',len:'práctico',spots:n=>`${n} lugares`,left:'disponibles',about:'Acerca de',aboutB:'Crea algo con tus manos junto a otras mujeres de la comunidad Breast Friends. No necesitas experiencia. Ven como eres y a tu ritmo.',know:'Es bueno saber',k1:'Incluye todos los materiales',k2:'Trae a una amiga o cuidadora',k3:'Intérprete de español en el lugar',host:'Te recibe',hear:'Escucha la historia de Elena',where:'Dónde',away:'Bakersfield · a 40 millas',dirs:'Cómo llegar',save:'Reservar mi lugar',going:'Vas a asistir',goingB:'Asistirás',
+ rsvp:'Reserva tu lugar',howMany:'¿Cuántas personas vienen?',inclYou:'Contándote a ti',interp:'¿Necesitas intérprete?',none:'No',confirm:'Confirmar mi lugar',inT:'¡Ya estás dentro!',inB:(d,t)=>`${d} a las ${t}`,addCal:'Al calendario',done:'Listo',calAdded:'Añadido al calendario',dirOpen:'Abriendo indicaciones',
+ locT:'Buscar eventos cerca de',radius:'Distancia',show:'Ver eventos',back:'Atrás',close:'Cerrar',share:'Compartir',list:'Lista',play:'Reproducir',pause:'Pausa',heart:'Guardar',more2:'Más opciones',globe:'Cambiar idioma',back10:'Atrás 10 segundos',fwd10:'Adelante 10 segundos',home:'Inicio',myScr:'Eventos',
+ caption:'Para algunas mujeres, duele un poco.'},
+pa:{hello:'Breast Friends',mam:'ਮੈਮੋਗ੍ਰਾਮ ਜਾਂਚ',stories:n=>`${n} ਕਹਾਣੀਆਂ`,women:n=>`${n} ਔਰਤਾਂ ਨੇ ਜਵਾਬ ਦਿੱਤਾ`,clips:n=>`${n} ਕਲਿੱਪ`,
+ hurt:'ਕੀ ਦਰਦ ਹੁੰਦਾ ਹੈ?',family:'ਪਰਿਵਾਰ ਅਤੇ ਬੱਚੇ',cost:'ਕਿੰਨਾ ਖਰਚਾ ਆਉਂਦਾ ਹੈ',costQ:'ਕਿੰਨਾ ਖਰਚਾ ਆਉਂਦਾ ਹੈ?',getting:'ਉੱਥੇ ਕਿਵੇਂ ਪਹੁੰਚੀਏ',after:'ਨਤੀਜੇ ਤੋਂ ਬਾਅਦ',all:'ਸਾਰੀਆਂ ਕਹਾਣੀਆਂ',
+ topicL:'ਵਿਸ਼ਾ: ',events:'ਸਮਾਗਮ ਅਤੇ ਵਰਕਸ਼ਾਪਾਂ',miles:'ਮੀਲ',today:'ਅੱਜ',sun:'ਐਤਵਾਰ',sat:'ਸ਼ਨਿੱਚਰਵਾਰ',nov8:'8 ਨਵੰ',nov9:'9 ਨਵੰ',
+ center:'ਕਲਾ ਅਤੇ ਅਧਿਆਤਮ ਕੇਂਦਰ',toAudio:'ਆਡੀਓ ’ਤੇ ਜਾਓ',toVideo:'ਵੀਡੀਓ ’ਤੇ ਜਾਓ',ep:'ਕੀ ਮੈਮੋਗ੍ਰਾਮ ਨਾਲ ਦਰਦ ਹੁੰਦਾ ਹੈ?',playlist:'ਪਲੇਲਿਸਟ',
+ language:'ਭਾਸ਼ਾ',langSub:'ਐਪ, ਕਹਾਣੀਆਂ ਅਤੇ ਕੈਪਸ਼ਨਾਂ ਲਈ।',changed:'ਭਾਸ਼ਾ ਪੰਜਾਬੀ ਵਿੱਚ ਬਦਲ ਗਈ',
+ search:'ਖੋਜੋ',ph:'ਕਹਾਣੀਆਂ, ਲੋਕ, ਸਮਾਗਮ ਖੋਜੋ',recent:'ਹਾਲੀਆ',browse:'ਵਿਸ਼ੇ ਵੇਖੋ',clear:'ਖੋਜ ਮਿਟਾਓ',fAll:'ਸਭ',fTopics:'ਵਿਸ਼ੇ',fStories:'ਕਹਾਣੀਆਂ',fMoments:'ਕਹਾਣੀਆਂ ਵਿੱਚੋਂ',fEvents:'ਸਮਾਗਮ',
+ noneT:q=>`“${q}” ਲਈ ਅਜੇ ਕੁਝ ਨਹੀਂ`,noneB:'ਛੋਟਾ ਸ਼ਬਦ ਵਰਤੋ, ਜਾਂ ਇਹਨਾਂ ਵਿੱਚੋਂ ਕਿਸੇ ਨਾਲ ਸ਼ੁਰੂ ਕਰੋ।',tryA:'ਦਰਦ',tryB:'ਖਰਚਾ',tryC:'ਪਹੁੰਚ',recentA:'ਕੀ ਦਰਦ ਹੁੰਦਾ ਹੈ',recentB:'ਮੁਫ਼ਤ ਮੈਮੋਗ੍ਰਾਮ',recentC:'ਕਲੀਨਿਕ ਤੱਕ ਸਵਾਰੀ',
+ shareTitle:'ਇਹ ਕਹਾਣੀ ਸਾਂਝੀ ਕਰੋ',shareEvent:'ਇਹ ਵਰਕਸ਼ਾਪ ਸਾਂਝੀ ਕਰੋ',whole:'ਪੂਰੀ ਕਹਾਣੀ',moment:'ਇਹ ਪਲ',msg:'ਸੁਨੇਹੇ',wa:'WhatsApp',copy:'ਲਿੰਕ ਕਾਪੀ',copied:'ਕਾਪੀ ਹੋਇਆ',fb:'Facebook',ig:'Instagram',linkCopied:'ਲਿੰਕ ਕਾਪੀ ਹੋ ਗਿਆ',opening:c=>`${c} ਖੁੱਲ੍ਹ ਰਿਹਾ ਹੈ`,
+ workshop:'ਵਰਕਸ਼ਾਪ',free:'ਮੁਫ਼ਤ',cost2:'ਦਾਖਲਾ',min:'90 ਮਿੰਟ',len:'ਹੱਥੀਂ ਕੰਮ',spots:n=>`${n} ਥਾਵਾਂ`,left:'ਅਜੇ ਖਾਲੀ',about:'ਜਾਣਕਾਰੀ',aboutB:'Breast Friends ਭਾਈਚਾਰੇ ਦੀਆਂ ਹੋਰ ਔਰਤਾਂ ਨਾਲ ਮਿਲ ਕੇ ਆਪਣੇ ਹੱਥੀਂ ਕੁਝ ਬਣਾਓ। ਕਿਸੇ ਕਲਾ ਦੇ ਤਜਰਬੇ ਦੀ ਲੋੜ ਨਹੀਂ। ਜਿਵੇਂ ਹੋ, ਉਵੇਂ ਆਓ ਅਤੇ ਆਰਾਮ ਨਾਲ ਕਰੋ।',know:'ਜਾਣਨ ਵਾਲੀਆਂ ਗੱਲਾਂ',k1:'ਸਾਰਾ ਸਮਾਨ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ',k2:'ਕਿਸੇ ਸਹੇਲੀ ਜਾਂ ਦੇਖਭਾਲ ਕਰਨ ਵਾਲੇ ਨੂੰ ਨਾਲ ਲਿਆਓ',k3:'ਮੌਕੇ ’ਤੇ ਸਪੇਨੀ ਦੁਭਾਸ਼ੀਆ',host:'ਤੁਹਾਡੀ ਮੇਜ਼ਬਾਨ',hear:'Elena ਦੀ ਕਹਾਣੀ ਸੁਣੋ',where:'ਕਿੱਥੇ',away:'Bakersfield · 40 ਮੀਲ ਦੂਰ',dirs:'ਰਸਤਾ ਵੇਖੋ',save:'ਮੇਰੀ ਥਾਂ ਰਾਖਵੀਂ ਕਰੋ',going:'ਤੁਸੀਂ ਆ ਰਹੇ ਹੋ',goingB:'ਆ ਰਹੇ ਹੋ',
+ rsvp:'ਆਪਣੀ ਥਾਂ ਰਾਖਵੀਂ ਕਰੋ',howMany:'ਕਿੰਨੇ ਲੋਕ ਆ ਰਹੇ ਹਨ?',inclYou:'ਤੁਹਾਨੂੰ ਮਿਲਾ ਕੇ',interp:'ਕੀ ਦੁਭਾਸ਼ੀਏ ਦੀ ਲੋੜ ਹੈ?',none:'ਨਹੀਂ',confirm:'ਮੇਰੀ ਥਾਂ ਪੱਕੀ ਕਰੋ',inT:'ਤੁਹਾਡੀ ਥਾਂ ਪੱਕੀ ਹੋ ਗਈ!',inB:(d,t)=>`${d}, ${t}`,addCal:'ਕੈਲੰਡਰ ਵਿੱਚ',done:'ਹੋ ਗਿਆ',calAdded:'ਕੈਲੰਡਰ ਵਿੱਚ ਜੋੜਿਆ ਗਿਆ',dirOpen:'ਰਸਤਾ ਖੁੱਲ੍ਹ ਰਿਹਾ ਹੈ',
+ locT:'ਨੇੜਲੇ ਸਮਾਗਮ ਲੱਭੋ',radius:'ਦੂਰੀ',show:'ਸਮਾਗਮ ਵੇਖੋ',back:'ਪਿੱਛੇ',close:'ਬੰਦ ਕਰੋ',share:'ਸਾਂਝਾ ਕਰੋ',list:'ਪਲੇਲਿਸਟ',play:'ਚਲਾਓ',pause:'ਰੋਕੋ',heart:'ਸੰਭਾਲੋ',more2:'ਹੋਰ ਵਿਕਲਪ',globe:'ਭਾਸ਼ਾ ਬਦਲੋ',back10:'10 ਸਕਿੰਟ ਪਿੱਛੇ',fwd10:'10 ਸਕਿੰਟ ਅੱਗੇ',home:'ਮੁੱਖ ਪੰਨਾ',myScr:'ਸਮਾਗਮ',
+ caption:'ਕੁਝ ਔਰਤਾਂ ਨੂੰ ਥੋੜ੍ਹਾ ਦਰਦ ਹੁੰਦਾ ਹੈ।'}};
+
+const PEOPLE=[
+ {id:'maya',name:'Maya Bennett',bg:'#f0fdb5',crop:[215.38,11.2,10.81,323.08],dur:'0:30',role:{en:'6 years survivor',es:'Sobreviviente, 6 años',pa:'6 ਸਾਲਾਂ ਤੋਂ ਸਰਵਾਈਵਰ'},title:{en:'Does a mammogram hurt?',es:'¿Duele una mamografía?',pa:'ਕੀ ਮੈਮੋਗ੍ਰਾਮ ਨਾਲ ਦਰਦ ਹੁੰਦਾ ਹੈ?'}},
+ {id:'mei',name:'Mei Lin Chen',bg:'#9faff8',crop:[232.65,-81.74,3.45,348.97],dur:'0:20',role:{en:'Mammogram tech',es:'Técnica en mamografía',pa:'ਮੈਮੋਗ੍ਰਾਮ ਟੈਕਨੀਸ਼ੀਅਨ'},title:{en:'What the plates actually do',es:'Qué hacen las placas',pa:'ਪਲੇਟਾਂ ਅਸਲ ਵਿੱਚ ਕੀ ਕਰਦੀਆਂ ਹਨ'}},
+ {id:'nadia',name:'Nadia Rahman',bg:'#dceff8',crop:[223.81,-244.93,9.35,335.72],dur:'1:24',role:{en:'First mammogram at 41',es:'Primera mamografía a los 41',pa:'41 ਸਾਲ ਦੀ ਉਮਰ ’ਚ ਪਹਿਲਾ ਮੈਮੋਗ੍ਰਾਮ'},title:{en:'I was scared it would hurt',es:'Tenía miedo de que doliera',pa:'ਮੈਨੂੰ ਦਰਦ ਦਾ ਡਰ ਸੀ'}},
+ {id:'claire',name:'Claire Morgan',bg:'#f0fdb5',crop:[237.76,-172.57,-118.96,356.64],dur:'0:19',role:{en:'Oncology nurse',es:'Enfermera de oncología',pa:'ਓਨਕੋਲੋਜੀ ਨਰਸ'},title:{en:'How to make it hurt less',es:'Cómo hacer que duela menos',pa:'ਦਰਦ ਘੱਟ ਕਿਵੇਂ ਕਰੀਏ'}},
+ {id:'elena',name:'Elena Torres',bg:'#9faff8',crop:[237.76,-86.94,-118.96,356.64],dur:'0:16',role:{en:'Promotora, Arvin',es:'Promotora, Arvin',pa:'ਪ੍ਰੋਮੋਟੋਰਾ, Arvin'},title:{en:'Going with a friend',es:'Ir con una amiga',pa:'ਸਹੇਲੀ ਨਾਲ ਜਾਣਾ'}},
+ {id:'priya',name:'Priya Shah',bg:'#dceff8',crop:[237.76,5.96,-119.67,356.64],dur:'0:23',role:{en:'Arvin',es:'Arvin',pa:'Arvin'},title:{en:'Over before I knew it',es:'Se acabó enseguida',pa:'ਪਲਾਂ ਵਿੱਚ ਹੋ ਗਿਆ'}}];
+
+const TOPICS=[
+ {id:'hurt',bg:'#fb4238',ink:'#f4f1ec',n:6,kw:'pain hurt squeeze dolor duele ਦਰਦ',icon:'shape-red',tile:'shape-red'},
+ {id:'family',bg:'#f0fdb5',ink:'#1d2567',n:5,kw:'family kids children familia hijos ਪਰਿਵਾਰ ਬੱਚੇ',icon:'shape-family',tile:'shape-family'},
+ {id:'cost',bg:'#dceff8',ink:'#1d2567',n:4,kw:'cost price free insurance costo cuesta gratis seguro ਖਰਚਾ ਮੁਫ਼ਤ',icon:'shape-cost',tile:'shape-cost'},
+ {id:'getting',bg:'#c4d5f8',ink:'#1d2567',n:3,kw:'ride bus transport drive llegar transporte ਪਹੁੰਚ ਸਵਾਰੀ',icon:'shape-getting',tile:'shape-getting'},
+ {id:'after',bg:'#1d2567',ink:'#f4f1ec',n:4,kw:'result callback biopsy resultado ਨਤੀਜਾ',icon:'shape-after',tile:'shape-after'}];
+/* Inset / rotation of each decorative shape comes straight from the Figma home frame. */
+const SHAPES={
+ hurt:'<span class="abs" style="left:293px;top:40px;width:75px;height:75px"><img src="assets/shape-red.svg" alt="" width="75" height="75"></span>',
+ family:'<span class="shape" style="inset:40% -4.19% -7.87% 81.84%"><i style="transform:rotate(-90deg)"><img src="assets/shape-family.svg" alt=""></i></span>',
+ cost:'<span class="shape" style="inset:33.9% .03% -33.9% 83.27%"><i style="transform:rotate(90deg)"><img src="assets/shape-cost.svg" alt=""></i></span>',
+ getting:'<span class="shape" style="left:81.84%;right:-3.07%;top:50%;bottom:-22.97%"><i style="transform:rotate(90deg)"><img src="assets/shape-getting.svg" alt=""></i></span>',
+ after:'<span class="abs" style="inset:40% -2.23% -16% 81.84%"><img src="assets/shape-after.svg" alt="" style="width:100%;height:100%"></span>'};
+
+const TILE={
+ hurt:'<span class="abs" style="right:-10px;bottom:-15px;width:75px;height:75px"><img src="assets/shape-red.svg" alt="" width="75" height="75"></span>',
+ family:'<span class="shape" style="right:-15px;bottom:-8px;width:80px;height:68px"><i style="transform:rotate(-90deg)"><img src="assets/shape-family.svg" alt=""></i></span>',
+ cost:'<span class="shape" style="right:0;bottom:-34px;width:60px;height:100px"><i style="transform:rotate(90deg)"><img src="assets/shape-cost.svg" alt=""></i></span>',
+ getting:'<span class="shape" style="right:-11px;bottom:-23px;width:76px;height:73px"><i style="transform:rotate(90deg)"><img src="assets/shape-getting.svg" alt=""></i></span>',
+ after:'<span class="abs" style="right:-8px;bottom:-16px;width:73px;height:76px"><img src="assets/shape-after.svg" alt="" style="width:100%;height:100%"></span>'};
+
+/* Topic page banners: each Home card's shape at the scale the Does it hurt banner uses. */
+const HERO={
+ hurt:'<img class="abs" src="assets/shape-topic.svg" alt="" style="left:246px;top:-19px;width:146px;height:146px">',
+ family:'<div class="shape" style="left:241px;top:-12px;width:156px;height:133px"><i style="transform:rotate(-90deg)"><img src="assets/shape-family.svg" alt=""></i></div>',
+ cost:'<div class="shape" style="left:260px;top:-43px;width:117px;height:195px"><i style="transform:rotate(90deg)"><img src="assets/shape-cost.svg" alt=""></i></div>',
+ getting:'<div class="shape" style="left:245px;top:-17px;width:148px;height:142px"><i style="transform:rotate(90deg)"><img src="assets/shape-getting.svg" alt=""></i></div>',
+ after:'<img class="abs" src="assets/shape-after.svg" alt="" style="left:248px;top:-20px;width:142px;height:148px">'};
+
+const TRANSCRIPT={
+ en:[['Does it hurt?','0:02'],['For most women it might be uncomfortable.','0:06'],['For some women, |it hurts a little.','0:12'],['But it’s quick, and it’s over before you know it.','0:17'],['',''],['Here’s what actually happens.','0:24'],['The machine has two flat plates.','0:27'],['The technician places your breast between them,','0:31'],['and the plates press down to flatten it for a few seconds.','0:35'],['',''],['It feels like a tight squeeze, like a blood pressure cuff, but on your chest.','0:44'],['The whole visit is about twenty minutes,','0:58'],['and most of that is changing clothes and waiting.','1:02']],
+ es:[['¿Duele?','0:02'],['Para la mayoría de las mujeres puede ser incómodo.','0:06'],['Para algunas mujeres, |duele un poco.','0:12'],['Pero es rápido y se acaba antes de que te des cuenta.','0:17'],['',''],['Esto es lo que realmente pasa.','0:24'],['La máquina tiene dos placas planas.','0:27'],['La técnica coloca tu seno entre ellas,','0:31'],['y las placas lo presionan unos segundos para aplanarlo.','0:35'],['',''],['Se siente como un apretón fuerte, como un brazalete de presión, pero en el pecho.','0:44'],['Toda la visita dura unos veinte minutos,','0:58'],['y casi todo es cambiarte de ropa y esperar.','1:02']],
+ pa:[['ਕੀ ਦਰਦ ਹੁੰਦਾ ਹੈ?','0:02'],['ਬਹੁਤੀਆਂ ਔਰਤਾਂ ਨੂੰ ਥੋੜ੍ਹੀ ਬੇਆਰਾਮੀ ਹੋ ਸਕਦੀ ਹੈ।','0:06'],['ਕੁਝ ਔਰਤਾਂ ਨੂੰ |ਥੋੜ੍ਹਾ ਦਰਦ ਹੁੰਦਾ ਹੈ।','0:12'],['ਪਰ ਇਹ ਛੇਤੀ ਹੁੰਦਾ ਹੈ, ਪਤਾ ਲੱਗਣ ਤੋਂ ਪਹਿਲਾਂ ਹੀ ਮੁੱਕ ਜਾਂਦਾ ਹੈ।','0:17'],['',''],['ਅਸਲ ਵਿੱਚ ਇਹ ਹੁੰਦਾ ਹੈ।','0:24'],['ਮਸ਼ੀਨ ਵਿੱਚ ਦੋ ਸਮਤਲ ਪਲੇਟਾਂ ਹੁੰਦੀਆਂ ਹਨ।','0:27'],['ਟੈਕਨੀਸ਼ੀਅਨ ਤੁਹਾਡੀ ਛਾਤੀ ਨੂੰ ਉਹਨਾਂ ਵਿਚਕਾਰ ਰੱਖਦੀ ਹੈ,','0:31'],['ਅਤੇ ਪਲੇਟਾਂ ਕੁਝ ਸਕਿੰਟਾਂ ਲਈ ਦਬਾ ਕੇ ਇਸ ਨੂੰ ਪੱਧਰਾ ਕਰਦੀਆਂ ਹਨ।','0:35'],['',''],['ਇਹ ਘੁੱਟਣ ਵਰਗਾ ਲੱਗਦਾ ਹੈ, ਜਿਵੇਂ ਬਲੱਡ ਪ੍ਰੈਸ਼ਰ ਦਾ ਕਫ਼, ਪਰ ਛਾਤੀ ’ਤੇ।','0:44'],['ਪੂਰੀ ਮੁਲਾਕਾਤ ਲਗਭਗ ਵੀਹ ਮਿੰਟ ਦੀ ਹੁੰਦੀ ਹੈ,','0:58'],['ਅਤੇ ਬਹੁਤਾ ਸਮਾਂ ਕੱਪੜੇ ਬਦਲਣ ਅਤੇ ਉਡੀਕ ਵਿੱਚ ਲੱਗਦਾ ਹੈ।','1:02']]};
+
+const EVENTS=[
+ {id:'ornaments',bg:'#eff1b6',ink:'#1d2567',img:'workshop-ornaments.png',ov:'overlay-cream',ins:'-3.98% -46.76% 38.65% -11.83%',dark:true,day:'today',dow:'sun',time:'2:00 PM',spots:8,title:{en:'Christmas Ornament making',es:'Taller de adornos navideños',pa:'ਕ੍ਰਿਸਮਸ ਸਜਾਵਟ ਬਣਾਉਣਾ'}},
+ {id:'cards',bg:'#fb4238',ink:'#f4f1ec',img:'workshop-cards.png',ov:'overlay-red',ins:'-3.59% -7.89% 38.65% -49.86%',dark:false,day:'nov8',dow:'sat',time:'4:00 PM',spots:8,title:{en:'Holiday cards craft workshop',es:'Taller de tarjetas navideñas',pa:'ਤਿਉਹਾਰੀ ਕਾਰਡ ਵਰਕਸ਼ਾਪ'}},
+ {id:'wreath',bg:'#9faff8',ink:'#1d2567',img:'workshop-ornaments.png',ov:'overlay-periwinkle',ins:'-3.59% -55.21% 38.65% -2.54%',dark:true,day:'nov9',dow:'sun',time:'11:00 AM',spots:12,title:{en:'Winter wreath workshop',es:'Taller de coronas de invierno',pa:'ਸਰਦੀਆਂ ਦੇ ਹਾਰ ਦੀ ਵਰਕਸ਼ਾਪ'}}];
+
+const BARS=[9,7,6,6,6,6,6,6,6,6,6,6,6,6,7,14,20,14,6,6,6,6,6,6,6,7,15,8,7,13,7,6,14,7,9,18,8,32,18,7,7];
+const CITIES=['Bakersfield','Arvin','Delano','Lamont'];
+
+const PRESETS={
+ home:{s:'home'},events:{s:'events'},video:{s:'player',mode:'video'},audio:{s:'player',mode:'audio'},topic:{s:'topic'},'topic-family':{s:'topic',topic:'family'},'topic-cost':{s:'topic',topic:'cost'},'topic-getting':{s:'topic',topic:'getting'},'topic-after':{s:'topic',topic:'after'},playlist:{s:'player',mode:'audio',sheet:'playlist'},
+ language:{s:'home',sheet:'language'},'home-es':{s:'home',lang:'es'},'home-pa':{s:'home',lang:'pa'},
+ search:{s:'search'},results:{s:'search',q:'hurt'},empty:{s:'search',q:'parking pass'},
+ 'share-story':{s:'player',mode:'video',sheet:'share',share:{kind:'story',p:0,seg:'whole'}},
+ 'share-moment':{s:'player',mode:'video',sheet:'share',share:{kind:'story',p:0,seg:'moment'}},
+ workshop:{s:'workshop',ev:'cards'},'workshop-more':{s:'workshop',ev:'cards',scroll:9999},
+ rsvp:{s:'workshop',ev:'cards',sheet:'rsvp'},confirmed:{s:'workshop',ev:'cards',sheet:'rsvp',going:{cards:1}},
+ going:{s:'workshop',ev:'cards',going:{cards:1}},'share-event':{s:'workshop',ev:'cards',sheet:'share',share:{kind:'event'}},
+ location:{s:'events',sheet:'location'},'events-going':{s:'events',going:{cards:1},scroll:0}};
+const GROUPS=[
+ ['Your six screens','from Figma',[['home','Home'],['events','Events and Workshops'],['video','Player, video'],['audio','Player, transcript'],['topic','Topic'],['playlist','Playlist sheet']]],
+ ['Topic pages','tap a Home card',[['topic-family','Family & kids'],['topic-cost','How much it costs'],['topic-getting','Getting there'],['topic-after','After the result']]],
+ ['Language','tap the globe',[['language','Language sheet'],['home-es','Home in Español'],['home-pa','Home in ਪੰਜਾਬੀ']]],
+ ['Search','tab or header icon',[['search','Search'],['results','Results'],['empty','No results']]],
+ ['Share','player share icon',[['share-story','Share a story'],['share-moment','Share a moment'],['share-event','Share a workshop']]],
+ ['Workshop','tap an event card',[['workshop','Workshop detail'],['workshop-more','Detail, scrolled'],['rsvp','Save a spot'],['confirmed','Confirmed'],['going','Going state'],['events-going','Events with Going tag']]],
+ ['Location','chevron on Events',[['location','Location sheet']]]];
+
+/* ---------- state ---------- */
+const frameId=new URLSearchParams(location.search).get('frame');
+let G=new URLSearchParams(location.search).get('lang')||'en';
+let S,hist=[];
+function fresh(p={}){return{s:'home',topic:'hurt',mode:'video',lang:'en',sheet:null,q:'',filter:'all',share:null,ev:'cards',going:{},guests:1,interp:'none',city:'Bakersfield',miles:40,open:'hurt',cur:0,playing:true,...JSON.parse(JSON.stringify(p))}}
+const t=(k,...a)=>{const v=STR[S.lang][k]??STR.en[k];return typeof v==='function'?v(...a):v};
+const L=o=>o[S.lang]??o.en;
+const ev=()=>EVENTS.find(e=>e.id===S.ev);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- pieces ---------- */
+// Workshop facts: icon tiles with the Figma icons.
+function facts(e,going){
+ const F=[['fact-free.svg',t('free'),t('cost2')],['fact-time.svg',t('min'),t('len')],['fact-people.svg',t('spots',e.spots-(going?S.guests:0)),t('left')]];
+ return `<div class="facts">${F.map(([i,b,l])=>`<div>${img(i,40)}<b>${b}</b><span>${l}</span></div>`).join('')}</div>`}
+const img=(n,w,h,cl='',alt='')=>`<img src="assets/${n}" width="${w}" height="${h||w}" alt="${alt}" class="${cl}">`;
+const av=(p,s)=>`<span class="av" style="width:${s}px;height:${s}px;background:${p.bg}"><img src="assets/headshots.png" alt="" style="height:${p.crop[0]}%;left:${p.crop[1]}%;top:${p.crop[2]}%;width:${p.crop[3]}%"></span>`;
+const check=(c='#f0fdb5',s=14)=>`<svg width="${s}" height="${s}" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.4 5.6 10.5 11.5 3.8" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function tabbar(a){return `<nav class="tabbar" aria-label="Main">
+ ${a==='home'?`<button class="tab on" data-a="nav:home" aria-label="${t('home')}" aria-current="page">${img('tab-home-active.svg',44)}</button>`:`<button class="tab" data-a="nav:home" aria-label="${t('home')}">${img('tab-home-idle.svg',44)}</button>`}
+ <button class="tab ${a==='search'?'on':''}" data-a="nav:search" aria-label="${t('search')}">${img(a==='search'?'ic-search-22-cream.svg':'ic-search-22.svg',22)}</button>
+ ${a==='events'?`<button class="tab" data-a="nav:events" aria-label="${t('myScr')}" aria-current="page">${img('tab-calendar-active.svg',44)}</button>`:`<button class="tab" data-a="nav:events" aria-label="${t('myScr')}">${img('ic-calendar-22.svg',22)}</button>`}
+ </nav>`}
+function playbar(){const p=PEOPLE[0];return `<div class="playbar">
+ <button class="info" data-a="player" aria-label="${L(p.title)}"><span class="av" style="width:40px;height:40px;background:${p.bg};position:absolute"><img src="assets/headshots.png" alt="" style="height:${p.crop[0]}%;left:${p.crop[1]}%;top:${p.crop[2]}%;width:${p.crop[3]}%"></span>
+ <span class="tt"><b>${t('hurt').replace(/[?？]/,'')}: ${p.name}</b><small>0:12/0:30</small></span></button>
+ <span class="ctl"><button data-a="player" aria-label="${t('play')}">${img('btn-play-navy.svg',32)}</button><button data-a="sheet:playlist" aria-label="${t('list')}">${img('btn-list.svg',32)}</button></span></div>`}
+function apphead(title,noSearch){return `<header class="apphead"><h1>${title}</h1><div class="acts">
+ ${noSearch?'':`<button class="iconbtn" data-a="nav:search" aria-label="${t('search')}">${img('ic-search-28.svg',28)}</button>`}
+ <button class="iconbtn" data-a="sheet:language" aria-label="${t('globe')}">${img('ic-globe-28.svg',28)}</button></div></header>`}
+function eventCard(e,tag='button',detail){const going=S.going[e.id];const attr=tag==='button'?`data-a="event:${e.id}" aria-label="${L(e.title)}"`:'';const when=detail?`${t(e.day)} / ${t(e.dow)} · ${e.time}`:e.time;
+ return `<${tag} class="ev press" style="background:${e.bg};color:${e.ink}" ${attr}>${going?`<span class="badge">${check('#1d2567')}${t('goingB')}</span>`:''}
+ <img class="ph" src="assets/${e.img}" alt=""><img class="ov" src="assets/${e.ov}.svg" alt="" style="inset:${e.ins}">
+ <span class="tx"><b>${L(e.title)}</b><span class="meta">${img(e.dark?'ic-clock-navy.svg':'ic-clock-cream.svg',16)}<span>${when}</span></span><span class="meta">${img(e.dark?'ic-pin-navy.svg':'ic-pin-cream.svg',16)}<span>${t('center')}</span></span></span></${tag}>`}
+
+/* ---------- screens ---------- */
+const V={
+home(){return `${apphead(t('hello'))}
+ <div class="scroll" style="top:123px"><div class="stack"><h2>${t('mam')}</h2>
+ ${TOPICS.map(x=>`<button class="tcard press" data-a="topic:${x.id}" style="background:${x.bg};color:${x.ink}"><b>${t(x.id)}</b><span class="n">${t('stories',x.n)}</span>${SHAPES[x.id]}</button>`).join('')}
+ </div></div>${playbar()}${tabbar('home')}`},
+
+events(){return `${apphead(t('events'),true)}
+ <button class="loc" data-a="sheet:location">${S.city} · ${S.miles} ${t('miles')}${img('ic-chev-navy-20.svg',20,20,'down')}</button>
+ <div class="scroll" style="top:153px;padding:10px 15px 120px">
+ ${EVENTS.map(e=>`<div class="day">${t(e.day)}<em>/ ${t(e.dow)}</em></div>${eventCard(e)}<div style="height:24px"></div>`).join('')}
+ </div>${tabbar('events')}`},
+
+topic(){const x=TOPICS.find(o=>o.id===S.topic)||TOPICS[0],name=t(x.id);return `<div class="bar-head"><button data-a="back" aria-label="${t('back')}">${img('ic-back-navy.svg',28)}</button><b>${t('topicL')}${S.lang==='es'?name:name.replace(/\?$/,'')}</b><button data-a="share:0" aria-label="${t('more2')}">${img('ic-kebab-navy.svg',28)}</button></div>
+ <div class="hero-topic" style="background:${x.bg};color:${x.ink}">${HERO[x.id]}<b style="position:relative;color:${x.ink==='#1d2567'?x.ink:'#fff'}">${name}</b><span style="position:relative">${t('women',x.n)}</span>
+ <button class="abs" style="left:298px;top:34px" data-a="player" aria-label="${t('play')}">${img(`btn-play-40-${x.id}.svg`,40)}</button></div>
+ <div class="scroll" style="top:235px;padding:0 16px 170px">
+ ${PEOPLE.slice(0,x.n).map((p,i)=>`<button class="row press" data-a="player">${av(p,52)}<span class="t"><b>${p.name}</b><span>${L(p.role)}</span></span><span class="d">${p.dur}</span></button>`).join('')}
+ </div>${playbar()}${tabbar('home')}`},
+
+player(heart){const p=PEOPLE[0],video=S.mode==='video';const lines=TRANSCRIPT[S.lang]||TRANSCRIPT.en;let on=true;
+ const body=lines.map(([l])=>{if(!l)return '<p>​</p>';if(l.includes('|')){const[a,b]=l.split('|');on=false;return `<p><span class="on">${a}</span>${b}</p>`}return `<p class="${on?'on':''}">${l}</p>`}).join('');
+ return `<div class="layer" style="background:${video?'linear-gradient(to top,#150100,#fb4238 159.48%)':'#fb4238'}">
+ <div class="ph-head"><div class="l"><button data-a="back" aria-label="${t('close')}">${img('ic-chev-cream-24.svg',24,24,'down')}</button></div>
+ ${S.sheet==='playlist'?'':`<button class="switch press" data-a="mode" style="background:${video?'rgba(255,255,255,.1)':'#fe6057'}">${img(video?'ic-audio.svg':'ic-video.svg',20)}${t(video?'toAudio':'toVideo')}</button>`}
+ <div class="r"><button data-a="sheet:playlist" aria-label="${t('list')}">${img('ic-list.svg',24)}</button>${S.sheet==='playlist'?`<button aria-label="${t('heart')}">${img('ic-heart.svg',24)}</button>`:''}<button data-a="share:0" aria-label="${t('share')}">${img('ic-share.svg',24)}</button></div></div>
+ ${video?`<div class="vid"><img src="assets/video-maya.png" alt=""><p>${t('caption')}</p></div>`:`<div class="ts-card"><img class="q" src="assets/shape-overlay.svg" alt=""><div class="ts">${body}</div><div class="fade"></div></div>`}
+ <div class="pinfo"><h2>${t('ep')}</h2><div>${av(p,24)}<p><b>${p.name}</b> <span>· ${L(p.role)}</span></p></div></div>
+ <div class="track">${BARS.map((h,i)=>`<i class="${i?'':'p'}" style="height:${h}px"></i>`).join('')}<u></u></div>
+ <div class="times"><span>0:12</span><span>−1:01:21</span></div>
+ <div class="ctrl"><button aria-label="${t('back10')}">${img('btn-back10.svg',48)}</button><button data-a="toggle" aria-label="${t(S.playing?'pause':'play')}">${S.playing?img('btn-pause.svg',48):`<svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 8.5c0-2 2.2-3.3 4-2.2l24 15.5c1.6 1 1.6 3.4 0 4.4L18 41.7c-1.8 1.1-4-.2-4-2.2z" fill="#f4f1ec"/></svg>`}</button><button aria-label="${t('fwd10')}">${img('btn-fwd10.svg',48)}</button></div></div>`},
+
+search(){return `<header class="apphead"><h1>${t('search')}</h1><div class="acts"><button class="iconbtn" data-a="sheet:language" aria-label="${t('globe')}">${img('ic-globe-28.svg',28)}</button></div></header>
+ <label class="field">${img('ic-search-22.svg',22)}<input id="q" type="search" autocomplete="off" aria-label="${t('search')}" placeholder="${t('ph')}" value="${esc(S.q)}"><button id="qx" data-a="clearq" aria-label="${t('clear')}" style="display:${S.q?'block':'none'}"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#c9c3d3"/><path d="m8.5 8.5 7 7m0-7-7 7" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button></label>
+ <div id="sr">${searchBody()}</div>${playbar()}${tabbar('search')}`},
+
+workshop(){const e=ev(),going=S.going[e.id],host=PEOPLE[4];
+ return `<div class="bar-head"><button data-a="back" aria-label="${t('back')}">${img('ic-back-navy.svg',28)}</button><b>${t('workshop')}</b><button data-a="share:event" aria-label="${t('share')}" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center">${img('ic-share-navy.svg',24)}</button></div>
+ <div class="scroll" style="top:104px;padding:0 16px 140px">
+ ${eventCard(e,'div',true).replace('style="','style="width:358px;')}
+ ${facts(e,going)}
+ <section class="panel"><h3>${t('about')}</h3><p>${t('aboutB')}</p></section>
+ <section class="panel"><h3>${t('know')}</h3>${['k1','k2','k3'].map(k=>`<div class="li">${check('#fb4238',18)}<span>${t(k)}</span></div>`).join('')}</section>
+ <section class="panel" style="padding-bottom:8px"><h3>${t('host')}</h3><button class="row" data-a="player" style="padding:4px 0 8px;margin:0;background:none">${av(host,52)}<span class="t"><b>${host.name}</b><span>${t('hear')}</span></span>${img('btn-play-navy.svg',32)}</button></section>
+ <section class="panel"><h3>${t('where')}</h3><div class="li" style="margin:0">${img('ic-pin-navy.svg',18)}<span><b style="font-weight:600">${t('center')}</b><br><span style="color:var(--ink-slate)">${t('away')}</span></span></div><button class="chip press" data-a="toast:dirOpen" style="margin-top:14px;background:var(--sand)">${t('dirs')}</button></section>
+ </div>
+ <div class="cta-bar">${going?`<button class="cta lime press" data-a="sheet:rsvp">${check('#1d2567',18)}${t('going')}</button>`:`<button class="cta press" data-a="sheet:rsvp">${t('save')}</button>`}</div>`}
+};
+
+function searchBody(){
+ const q=S.q.trim();
+ if(!q)return `<div class="scroll" style="top:191px;padding:0 15px 180px">
+  <h2 class="sec" style="margin-bottom:20px">${t('recent')}</h2><div class="chips" style="margin-bottom:20px">${['recentA','recentB','recentC'].map(k=>`<button class="chip press" data-a="q:${esc(t(k))}">${t(k)}</button>`).join('')}</div>
+  <h2 class="sec">${t('browse')}</h2><div class="grid">${TOPICS.map(x=>`<button class="tile press" data-a="topic:${x.id}" style="background:${x.bg};color:${x.ink}"><b>${t(x.id)}</b><span class="c">${t('stories',x.n)}</span>${TILE[x.id]}</button>`).join('')}</div></div>`;
+ const R=find(q),count=R.topics.length+R.stories.length+R.moments.length+R.events.length;
+ if(!count)return `<div class="empty"><h2>${t('noneT',esc(q))}</h2><p>${t('noneB')}</p><div class="chips">${['tryA','tryB','tryC'].map(k=>`<button class="chip press" data-a="q:${esc(t(k))}">${t(k)}</button>`).join('')}</div></div>`;
+ const f=S.filter,show=k=>(f==='all'||f===k)&&R[k].length;
+ const opts=[['all','fAll',count],['topics','fTopics',R.topics.length],['stories','fStories',R.stories.length],['moments','fMoments',R.moments.length],['events','fEvents',R.events.length]].filter(o=>o[2]);
+ return `<div class="fchips" role="tablist">${opts.map(([k,l])=>`<button class="chip ${f===k?'on':''}" data-a="filter:${k}" role="tab" aria-selected="${f===k}">${t(l)}</button>`).join('')}</div>
+ <div class="scroll" style="top:239px;padding:0 15px 180px">
+ ${show('topics')?`${f==='all'?`<h2 class="sec">${t('fTopics')}</h2>`:''}${R.topics.map(x=>`<button class="res-t press" data-a="topic:${x.id}" style="background:${x.bg};color:${x.ink}"><span style="opacity:1"><b>${mark(t(x.id),q)}</b><span>${t('stories',x.n)}</span></span></button>`).join('')}<div style="height:12px"></div>`:''}
+ ${show('stories')?`${f==='all'?`<h2 class="sec">${t('fStories')}</h2>`:''}${R.stories.map(p=>`<button class="row press" data-a="player">${av(p,52)}<span class="t"><b>${mark(L(p.title),q)}</b><span>${mark(p.name,q)}</span></span><span class="d">${p.dur}</span></button>`).join('')}<div style="height:10px"></div>`:''}
+ ${show('moments')?`${f==='all'?`<h2 class="sec">${t('fMoments')}</h2>`:''}${R.moments.map(m=>`<button class="quote press" data-a="audio"><p>${mark(m.text,q)}</p><div>${av(PEOPLE[0],20)}<span>${PEOPLE[0].name} · ${m.ts}</span></div></button>`).join('')}<div style="height:10px"></div>`:''}
+ ${show('events')?`${f==='all'?`<h2 class="sec">${t('fEvents')}</h2>`:''}${R.events.map(e=>`<button class="row press" data-a="event:${e.id}"><img class="thumb" src="assets/${e.img}" alt=""><span class="t"><b>${mark(L(e.title),q)}</b><span>${t(e.day)} · ${e.time}</span></span></button>`).join('')}`:''}
+ </div>`}
+const norm=s=>[...String(s)].map(c=>(c.normalize('NFD')[0]||c).toLowerCase()).join('');
+function mark(text,q){const i=norm(text).indexOf(norm(q));if(i<0)return esc(text);return esc(text.slice(0,i))+'<mark>'+esc(text.slice(i,i+q.length))+'</mark>'+esc(text.slice(i+q.length))}
+function find(q){const n=norm(q),has=s=>norm(s).includes(n);
+ return{topics:TOPICS.filter(x=>has(t(x.id))||has(x.kw)),
+ stories:PEOPLE.filter(p=>has(L(p.title))||has(p.name)||has(L(p.role))),
+ moments:(TRANSCRIPT[S.lang]||TRANSCRIPT.en).filter(([l])=>l&&has(l.replace('|',''))).slice(0,3).map(([l,ts])=>({text:l.replace('|',''),ts})),
+ events:EVENTS.filter(e=>has(L(e.title))||has(t('center')))}}
+
+/* ---------- sheets ---------- */
+const SH={
+language(){const rows=[['en','En','English','#f0fdb5'],['es','Es','Español','#9faff8'],['pa','ਪੰ','ਪੰਜਾਬੀ','#dceff8']];
+ return `<h2>${t('language')}</h2><p class="sub">${t('langSub')}</p><div class="body">
+ ${rows.map(([k,g,n,c])=>`<button class="row press" data-a="lang:${k}" role="radio" aria-checked="${S.lang===k}"><span class="lang-av" style="background:${c}">${g}</span><span class="t"><b>${n}</b></span><span class="tick ${S.lang===k?'on':''}">${S.lang===k?check():''}</span></button>`).join('')}</div>`},
+
+share(){const c=S.share;
+ const LINK='<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1d2567" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>';
+ const chans=[['copy',null],['wa','brand-whatsapp-circle.svg'],['fb','brand-facebook-circle.svg'],['msg','brand-message-circle.svg'],['ig','brand-instagram-circle.svg']];
+ let preview;
+ if(c.kind==='event'){const e=ev();preview=eventCard(e,'div',true).replace('style="','style="width:358px;')}
+ else{const p=PEOPLE[c.p||0],mo=c.seg==='moment'&&(c.p||0)===0;
+  preview=`<div class="card-share"><img class="q" src="assets/shape-topic.svg" alt=""><div class="who">${av(p,24)}<b>${p.name}</b><span>· ${L(p.role)}</span></div><h3>${mo?`“${t('caption')}”`:L(p.title)}</h3><div class="mini"><div>${BARS.slice(14,38).map((h,i)=>`<i class="${mo&&(i<6||i>13)?'off':''}" style="height:${Math.max(4,Math.round(h*.7))}px"></i>`).join('')}</div><span>${mo?'0:12–0:18':p.dur}</span></div></div>`}
+ return `<h2>${t(c.kind==='event'?'shareEvent':'shareTitle')}</h2><div class="body">
+ ${c.kind==='story'&&(c.p||0)===0?`<div class="seg" role="tablist"><button class="${c.seg==='whole'?'on':''}" data-a="seg:whole" role="tab" aria-selected="${c.seg==='whole'}">${t('whole')}</button><button class="${c.seg==='moment'?'on':''}" data-a="seg:moment" role="tab" aria-selected="${c.seg==='moment'}">${t('moment')}</button></div>`:''}
+ ${preview}
+ <div class="chan">${chans.map(([k,src])=>`<button data-a="send:${k}"><span>${src?`<img src="assets/${src}" alt="">`:(c.copied?check('#1d2567',24):LINK)}</span>${k==='copy'&&c.copied?t('copied'):t(k)}</button>`).join('')}</div>
+ </div>`},
+
+rsvp(){const e=ev();
+ if(S.going[e.id])return `<h2>${t('inT')}</h2><div class="body"><div class="hero-topic" style="position:relative;left:0;top:0;width:100%;background:${e.bg};color:${e.ink}"><img class="abs" src="assets/shape-topic.svg" alt="" style="left:246px;top:-19px;width:146px;height:146px;${e.bg==='#fb4238'?'':'opacity:.4'}"><span style="position:relative;font:700 20px var(--pg);margin:0;white-space:normal;padding-right:70px">${L(e.title)}</span><span style="position:relative;font:500 15px/1.35 var(--pg);margin-top:8px;white-space:normal;padding-right:60px">${t('inB',`${t(e.day)}, ${t(e.dow)}`,e.time)}</span></div>
+ <div style="display:flex;gap:8px;margin-top:16px"><button class="cta white press" data-a="toast:calAdded">${t('addCal')}</button><button class="cta press" data-a="close">${t('done')}</button></div></div>`;
+ return `<h2>${t('rsvp')}</h2><div class="body">
+ <div class="row" style="margin-bottom:10px"><img class="thumb" src="assets/${e.img}" alt=""><span class="t"><b>${L(e.title)}</b><span>${t(e.day)} · ${e.time}</span></span></div>
+ <div class="row" style="margin-bottom:10px"><span class="t"><b>${t('howMany')}</b><span>${t('inclYou')}</span></span><span class="step"><button data-a="g:-1" aria-label="−" ${S.guests<2?'disabled':''}>−</button><b aria-live="polite">${S.guests}</b><button data-a="g:1" aria-label="+" ${S.guests>3?'disabled':''}>+</button></span></div>
+ <div class="panel"><h3 style="font:700 16px var(--in);margin-bottom:12px">${t('interp')}</h3><div class="chips">${[['none',t('none')],['es','Español'],['pa','ਪੰਜਾਬੀ']].map(([k,l])=>`<button class="chip ${S.interp===k?'on':''}" style="${S.interp===k?'':'background:var(--sand)'}" data-a="i:${k}">${l}</button>`).join('')}</div></div>
+ <button class="cta press" data-a="confirm" style="margin-top:6px">${t('confirm')}</button></div>`},
+
+location(){return `<h2>${t('locT')}</h2><div class="body">
+ ${CITIES.map(c=>`<button class="row press" style="padding:16px 14px" data-a="city:${c}" role="radio" aria-checked="${S.city===c}"><span class="t"><b>${c}</b></span><span class="tick ${S.city===c?'on':''}">${S.city===c?check():''}</span></button>`).join('')}
+ <div class="panel"><h3 style="font:700 16px var(--in);margin-bottom:12px">${t('radius')}</h3><div class="chips">${[10,25,40].map(m=>`<button class="chip ${S.miles===m?'on':''}" style="${S.miles===m?'':'background:var(--sand)'}" data-a="mi:${m}">${m} ${t('miles')}</button>`).join('')}</div></div>
+ <button class="cta press" data-a="close" style="margin-top:6px">${t('show')}</button></div>`},
+
+playlist(){const gs=[['hurt','#fb4238','#f4f1ec','shape-36','hurt',6,'ic-chev-cream-24','ic-kebab-cream'],['cost','#9faff8','#1d2567','shape-peri-36','costQ',4,'ic-chev-navy-24','ic-kebab-navy'],['cost2','#1d2567','#f4f1ec','shape-navy-36','costQ',4,'ic-chev-cream-24','ic-kebab-cream']];
+ return `<h2 style="position:absolute;top:50px">${t('playlist')}</h2><div class="inner-scroll" style="margin-top:41px;height:703px;padding:0 16px 48px">
+ ${gs.map(([id,bg,ink,sh,key,n,chev,keb])=>{const op=S.open===id;return `<section style="background:${bg};color:${ink};border-radius:20px;padding:20px 20px ${op?24:20}px;margin-bottom:12px">
+  <button data-a="open:${id}" aria-expanded="${op}" style="display:flex;width:100%;height:52px;align-items:center;justify-content:space-between"><span style="display:flex;gap:12px;align-items:center"><img src="assets/${sh}.svg" alt="" height="36" style="width:auto"><span><b style="display:block;font-size:20px;font-weight:700;white-space:nowrap">${t(key)}</b><span style="display:block;font-size:16px;opacity:.85">${t('clips',n)}</span></span></span><img src="assets/${chev}.svg" width="24" height="24" alt="" style="transform:rotate(${op?90:-90}deg);transition:transform .22s ease"></button>
+  ${op?`<div style="margin-top:20px">${PEOPLE.slice(0,n).map((p,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;${i?'margin-top:24px':''}"><button data-a="pl:${id}:${i}" style="display:flex;gap:8px;align-items:center;min-width:0">${av(p,36)}<span style="min-width:0"><b style="display:block;font-size:16px;font-weight:600;white-space:nowrap">${p.name}</b><span style="display:block;font-size:14px;opacity:.8;white-space:nowrap">${L(p.role)}</span></span></button><span style="display:flex;gap:8px;flex:none"><button data-a="pl:${id}:${i}" aria-label="${t('play')}">${img(`btn-${S.cur===i&&id==='hurt'?'pause':'play'}-24-${id}.svg`,24)}</button><button data-a="share:${i}" aria-label="${t('share')}">${img(keb+'.svg',24)}</button></span></div>`).join('')}</div>`:''}</section>`}).join('')}</div>`}
+};
+
+/* ---------- render ---------- */
+let app,toastT;
+function render(anim){const scr=app.querySelector('.scroll');const keep=scr?scr.scrollTop:0;
+ document.documentElement.lang=S.lang;
+ app.style.background=S.s==='player'?'#fb4238':'var(--sand)';
+ app.querySelector('#scr').className='layer '+(anim||'');
+ app.querySelector('#scr').innerHTML=V[S.s]();
+ if(!anim){const n=app.querySelector('.scroll');if(n)n.scrollTop=keep}
+ renderSheet()}
+function renderSheet(enter){const h=app.querySelector('#sh');if(!S.sheet){h.innerHTML='';return}
+ const was=h.querySelector('.sheet');const inner=was&&was.querySelector('.inner-scroll');const keep=inner?inner.scrollTop:0;
+ h.innerHTML=`<div class="scrim" data-a="close" style="${enter?'':'animation:none'}"></div><div class="sheet" role="dialog" aria-modal="true" style="${enter?'':'animation:none'}${S.sheet==='playlist'?';top:99px;padding-bottom:0':''}"><div class="grab"></div>${SH[S.sheet]()}</div>`;
+ const n=h.querySelector('.inner-scroll');if(n)n.scrollTop=keep;bindDrag(h.querySelector('.sheet'));bindChan(h.querySelector('.sheet'))}
+function bindChan(sheet){const r=sheet.querySelector('.chan');if(!r)return;let x0=null,sl=0,moved=false;
+ r.onpointerdown=e=>{if(e.pointerType!=='mouse')return;x0=e.clientX;sl=r.scrollLeft;moved=false};
+ r.onpointermove=e=>{if(x0==null)return;const d=e.clientX-x0;if(Math.abs(d)>4)moved=true;r.scrollLeft=sl-d};
+ r.onpointerup=r.onpointerleave=()=>{x0=null};
+ r.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false}},true)}
+function toast(msg){const old=app.querySelector('.toast');if(old)old.remove();const d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.innerHTML=check('#f0fdb5')+esc(msg);app.appendChild(d);clearTimeout(toastT);toastT=setTimeout(()=>d.remove(),1900)}
+function openSheet(n){S.sheet=n;renderSheet(true)}
+function closeSheet(){const sh=app.querySelector('.sheet');if(!sh){S.sheet=null;return}S.sheet=null;sh.classList.add('closing');sh.style.transform='';const scrim=app.querySelector('.scrim');if(scrim){scrim.style.transition='opacity .26s';scrim.style.opacity=0}setTimeout(()=>{if(!S.sheet)app.querySelector('#sh').innerHTML=''},260)}
+function bindDrag(sh){const g=sh.querySelector('.grab');let y0=null,dy=0;
+ g.onpointerdown=e=>{y0=e.clientY;dy=0;g.setPointerCapture(e.pointerId);sh.style.transition='none'};
+ g.onpointermove=e=>{if(y0==null)return;dy=Math.max(0,e.clientY-y0);sh.style.transform=`translateY(${dy}px)`};
+ g.onpointerup=()=>{if(y0==null)return;y0=null;sh.style.transition='transform .3s var(--ease)';if(dy>80){closeSheet()}else sh.style.transform=''}}
+function go(s,extra,anim='push'){hist.push({s:S.s,mode:S.mode,ev:S.ev});S.s=s;Object.assign(S,extra||{});S.sheet=null;render(anim);syncRail()}
+
+const ACT={
+ 'nav':v=>{hist=[];S.s=v;S.sheet=null;render();syncRail()},
+ back(){const p=hist.pop()||{s:'home'};Object.assign(S,p);render();syncRail()},
+ close:closeSheet,
+ sheet:v=>openSheet(v),
+ topic:v=>go('topic',{topic:v||'hurt'}),
+ player:()=>go('player',{mode:'video'},'rise'),
+ audio:()=>go('player',{mode:'audio'},'rise'),
+ mode(){S.mode=S.mode==='video'?'audio':'video';render()},
+ toggle(){S.playing=!S.playing;render()},
+ event:v=>go('workshop',{ev:v}),
+ share(v){S.share=v==='event'?{kind:'event'}:{kind:'story',p:+v,seg:'whole'};openSheet('share')},
+ seg(v){S.share.seg=v;renderSheet()},
+ send(v){if(v==='copy'){S.share.copied=true;navigator.clipboard?.writeText('https://example.com/breast-friends/maya-bennett').catch(()=>{});renderSheet();toast(t('linkCopied'));return}
+  const name=t(v);closeSheet();toast(t('opening',name))},
+ lang(v){S.lang=v;G=v;syncLang();render();setTimeout(()=>{closeSheet();toast(STR[v].changed)},140)},
+ q(v){S.q=v;S.filter='all';const i=app.querySelector('#q');if(i)i.value=v;paintSearch()},
+ clearq(){ACT.q('');app.querySelector('#q').focus()},
+ filter(v){S.filter=v;paintSearch()},
+ g(v){S.guests=Math.min(4,Math.max(1,S.guests+ +v));renderSheet()},
+ i(v){S.interp=v;renderSheet()},
+ confirm(){S.going[S.ev]=1;render()},
+ toast:v=>toast(t(v)),
+ city(v){S.city=v;render()},
+ mi(v){S.miles=+v;render()},
+ open(v){S.open=S.open===v?null:v;renderSheet()},
+ pl(v){const[id,i]=v.split(':');if(id==='hurt')S.cur=+i;renderSheet()}
+};
+function paintSearch(){const scr=app.querySelector('#sr');if(!scr)return;scr.innerHTML=searchBody();const x=app.querySelector('#qx');if(x)x.style.display=S.q?'block':'none'}
+
+function mount(el){el.innerHTML='<div class="phone" id="app"><div id="scr" class="layer"></div><div id="sh"></div></div>';app=el.querySelector('#app');
+ app.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const raw=b.dataset.a,i=raw.indexOf(':');const k=i<0?raw:raw.slice(0,i),v=i<0?undefined:raw.slice(i+1);ACT[k]&&ACT[k](v)});
+ app.addEventListener('input',e=>{if(e.target.id==='q'){S.q=e.target.value;S.filter='all';paintSearch()}})}
+function load(id){S=fresh({lang:G,...PRESETS[id]});if(id==='results')S.q=t('tryA');hist=S.s==='home'||S.s==='events'||S.s==='search'?[]:[{s:S.s==='workshop'?'events':'home',mode:'video',ev:S.ev}];render();if(S.scroll!=null){const n=app.querySelector('.scroll');if(n)n.scrollTop=S.scroll}syncRail(id)}
+addEventListener('keydown',e=>{if(e.key==='Escape'&&S&&S.sheet)closeSheet()});
+
+/* ---------- review shell ---------- */
+let current='home',view='board';
+function syncLang(){document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('on',b.dataset.l===G))}
+function syncRail(id){if(id)current=id;document.querySelectorAll('.rail button').forEach(b=>b.classList.toggle('on',b.dataset.f===current&&!!id))}
+function shell(){const root=document.getElementById('root');
+ root.innerHTML=`<div class="shell"><div class="topbar"><h1>Breast Friends</h1><div class="tools"><div class="view" aria-label="Language">${[['en','English'],['es','Español'],['pa','ਪੰਜਾਬੀ']].map(([k,l])=>`<button data-l="${k}" class="${G===k?'on':''}">${l}</button>`).join('')}</div><div class="view"><button data-v="board" class="${view==='board'?'on':''}">All screens</button><button data-v="proto" class="${view==='proto'?'on':''}">Clickable</button></div></div></div><div id="v"></div></div>`;
+ root.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{view=b.dataset.v;shell()});
+ root.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{G=b.dataset.l;if(view==='proto'){S.lang=G;if(S.s==='search'&&current==='results')S.q=t('tryA');syncLang();render()}else shell()});
+ const v=root.querySelector('#v');
+ if(view==='board'){v.innerHTML=GROUPS.map(([g,n,items])=>`<section class="group"><h2>${g}<span>${n}</span></h2><div class="board">${items.map(([id,c])=>`<button class="fr" data-f="${id}"><span class="cap">${c}</span><span class="box"><iframe loading="lazy" tabindex="-1" title="${c}" src="?frame=${id}&lang=${G}"></iframe></span></button>`).join('')}</div></section>`).join('');
+  v.querySelectorAll('.fr').forEach(b=>b.onclick=()=>{view='proto';current=b.dataset.f;shell();scrollTo(0,0)});return}
+ v.innerHTML=`<div class="proto"><aside class="rail">${GROUPS.map(([g,,items])=>`<h2>${g}</h2><ul>${items.map(([id,c])=>`<li><button data-f="${id}">${c}</button></li>`).join('')}</ul>`).join('')}</aside><div class="stage" id="st"><div class="device"><i class="hw l" style="top:180px;height:38px"></i><i class="hw l" style="top:250px;height:64px"></i><i class="hw l" style="top:332px;height:64px"></i><i class="hw r" style="top:272px;height:103px"></i><div class="bez"><div id="mp"></div><div class="island"></div></div></div></div></div>`;
+ const st=v.querySelector('#st');mount(v.querySelector('#mp'));
+ const fit=()=>{const z=Math.min(1,(innerHeight-90)/880);st.style.zoom=z};fit();addEventListener('resize',fit);
+ v.querySelectorAll('.rail button').forEach(b=>b.onclick=()=>load(b.dataset.f));load(current)}
+
+if(frameId&&PRESETS[frameId]){document.body.classList.add('static','frame-only');document.body.style.background='transparent';mount(document.getElementById('root'));load(frameId)}
+else shell();
+</script>
+<script src="progress.js"></script>
+</body>
+</html>
