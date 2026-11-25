@@ -88,8 +88,10 @@ document.head.insertAdjacentHTML('beforeend',`<style id="bf-progress-2">
 #bf-yt.on{visibility:visible}
 #bf-yt iframe{position:absolute;left:-259px;top:-111px;width:860px;height:484px;border:0;pointer-events:none}
 #bf-yt .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .35s ease}
-.bf-ph{background:linear-gradient(110deg,#4a4648 30%,#5a5658 50%,#4a4648 70%);background-size:220% 100%;animation:bfshim 1.6s linear infinite}
-@keyframes bfshim{from{background-position:120% 0}to{background-position:-120% 0}}
+.bf-ph{background:#4a4648}
+.bf-ph .bf-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
+#bf-yt.held .bf-thumb{opacity:1}
+#bf-yt.held .bf-load{display:none}
 .bf-load{position:absolute;left:0;right:0;top:44%;display:flex;align-items:center;justify-content:center;gap:8px;color:rgba(244,241,236,.75);font:600 14px var(--in)}
 .bf-load i{width:14px;height:14px;border-radius:50%;border:2px solid rgba(244,241,236,.3);border-top-color:var(--sand);animation:bfspin .8s linear infinite}
 @keyframes bfspin{to{transform:rotate(360deg)}}
@@ -178,7 +180,7 @@ const VIDEOS={
 /* ---------- progress state (in memory: a reload starts a fresh demo) ---------- */
 const DONE={};
 const CLK={k:null,tp:'hurt',i:0,t:0,dur:30};
-let JUST=null,YT={id:null,state:-1,last:0,since:0,frame:null,ready:false,born:0,q:[]};
+let JUST=null,YT={id:null,state:-1,last:0,since:0,frame:null,ready:false,born:0,q:[],played:false};
 const key=(tp,i)=>tp+':'+i;
 const fmt=s=>{s=Math.max(0,Math.floor(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 const topicOf=id=>TOPICS.find(o=>o.id===id)||TOPICS[0];
@@ -205,8 +207,8 @@ function ytBox(){if(!app)return null;let b=app.querySelector('#bf-yt');
 function syncYT(){const b=app&&app.querySelector('#bf-yt');
  if(!S||S.s!=='player'||isStatic()||!CLK.k){if(b){b.classList.remove('on');if(YT.frame)ytCmd('pauseVideo')}return}
  const box=ytBox(),v=cur();box.classList.toggle('on',S.mode==='video');
- if(YT.id!==v.id){YT.id=v.id;YT.state=-1;YT.ready=false;YT.q=[];YT.born=Date.now();capLine=-2;
-  box.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${v.id}?autoplay=${S.playing?1:0}&controls=0&disablekb=1&fs=0&iv_load_policy=3&playsinline=1&rel=0&enablejsapi=1&start=${Math.floor(CLK.t)}&origin=${encodeURIComponent(location.origin)}" title="${esc(v.name)}" allow="autoplay; encrypted-media"></iframe><div class="poster bf-ph"><span class="bf-load"><i></i>${t('loading')}</span></div><div class="bf-cap"><p></p></div><a class="bf-ytpill" href="${ytLink(v)}" target="_blank" rel="noopener">${YTICON}YouTube</a>`;
+ if(YT.id!==v.id){YT.id=v.id;YT.state=-1;YT.ready=false;YT.q=[];YT.born=Date.now();YT.played=false;capLine=-2;
+  box.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${v.id}?autoplay=${S.playing?1:0}&controls=0&disablekb=1&fs=0&iv_load_policy=3&playsinline=1&rel=0&enablejsapi=1&start=${Math.floor(CLK.t)}&origin=${encodeURIComponent(location.origin)}" title="${esc(v.name)}" allow="autoplay; encrypted-media"></iframe><div class="poster bf-ph"><img class="bf-thumb" src="${thumb(v.id)}" alt=""><span class="bf-load"><i></i>${t('loading')}</span></div><div class="bf-cap"><p></p></div><a class="bf-ytpill" href="${ytLink(v)}" target="_blank" rel="noopener">${YTICON}YouTube</a>`;
   YT.frame=box.querySelector('iframe');
   YT.frame.addEventListener('load',()=>{let n=0;const h=setInterval(()=>{if(YT.ready||n++>40){clearInterval(h);return}YT.frame&&YT.frame.contentWindow.postMessage(JSON.stringify({event:'listening',id:'bf',channel:'widget'}),'*')},250)})}
  else ytCmd(S.playing?'playVideo':'pauseVideo');
@@ -216,7 +218,7 @@ addEventListener('message',e=>{if(!YT.frame||e.source!==YT.frame.contentWindow)r
  const info=d&&d.info;if(!info)return;
  if(typeof info.playerState==='number'){if(info.playerState===1&&YT.state!==1)YT.since=Date.now();YT.state=info.playerState;updPoster();if(YT.state===0&&CLK.t<CLK.dur)finish()}
  if(typeof info.currentTime==='number'&&CLK.k&&YT.id===cur().id&&YT.state===1){YT.last=Date.now();CLK.t=Math.min(CLK.dur,info.currentTime);paint();if(CLK.t>=CLK.dur-.4)finish()}});
-function updPoster(){const b=app&&app.querySelector('#bf-yt');if(!b)return;const on=YT.state===1&&S.playing&&Date.now()-YT.since>3000;b.classList.toggle('playing',on)}
+function updPoster(){const b=app&&app.querySelector('#bf-yt');if(!b)return;const on=YT.state===1&&S.playing&&Date.now()-YT.since>1500;if(on)YT.played=true;b.classList.toggle('playing',on);b.classList.toggle('held',!on&&YT.played)}
 const _render=render;render=function(a){_render(a);syncYT();updPoster();
  const b=app&&app.querySelector('#bf-yt');if(b&&a==='rise'&&S.s==='player'){b.style.animation='none';void b.offsetWidth;b.style.animation='rise .4s var(--ease)'}
  if(S&&S.s==='player'){paintTranscript(true);paintCaption(true)}};
