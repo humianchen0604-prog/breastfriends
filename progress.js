@@ -105,7 +105,16 @@ document.head.insertAdjacentHTML('beforeend',`<style id="bf-progress-2">
 .bf-av{position:relative;border-radius:999px;overflow:hidden;flex:none;background:#000}
 .bf-av img{position:absolute;left:50%;top:50%;height:100%;width:auto;max-width:none;transform:translate(-50%,-50%)}
 .ts .bf-lang{min-height:0;margin-bottom:12px;font:600 12px var(--in);letter-spacing:.4px;text-transform:uppercase;color:var(--ink-slate)}
-.ts p{transition:color .3s ease}
+.ts[data-tx]{left:0;width:100%;top:0;height:100%;padding:0 26px;font-size:22px;line-height:1.28;scroll-behavior:auto}
+.ts[data-tx] .bf-pad{height:150px;min-height:0}
+.ts[data-tx] .bf-lang{margin:20px 0 0}
+.ts .bf-l{min-height:0;margin:0 0 22px;color:rgba(29,37,103,.18);transform-origin:left center;transition:color .35s ease,transform .35s var(--ease),opacity .35s ease}
+.ts .bf-l.past{color:rgba(29,37,103,.42)}
+.ts .bf-l.now{transform:scale(1.04);color:rgba(29,37,103,.42)}
+.ts .bf-l.now span.w,.ts .bf-l.past span{color:inherit}
+.ts .bf-l.now span{transition:color .2s ease}
+.ts .bf-l.now span.w{color:var(--nightfall)}
+.bf-fadetop{position:absolute;left:0;top:0;width:100%;height:70px;background:linear-gradient(to top,rgba(244,241,236,0),var(--sand));pointer-events:none;z-index:1}
 .bf-notx{position:absolute;left:24px;right:24px;top:96px}
 .bf-notx b{display:block;font-size:24px;font-weight:600;line-height:1.25;color:var(--nightfall)}
 .bf-notx span{display:block;margin-top:12px;font:400 15px/1.4 var(--in);color:var(--ink-slate)}
@@ -226,10 +235,11 @@ function ctrlHTML(){const done=CLK.k&&DONE[CLK.k]&&CLK.t>=CLK.dur;
  return `<button data-a="seek:-10" aria-label="${t('back10')}">${img('btn-back10.svg',48)}</button><button data-a="toggle" aria-label="${t(S.playing?'pause':'play')}">${S.playing?img('btn-pause.svg',48):`<svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 8.5c0-2 2.2-3.3 4-2.2l24 15.5c1.6 1 1.6 3.4 0 4.4L18 41.7c-1.8 1.1-4-.2-4-2.2z" fill="#f4f1ec"/></svg>`}</button><button data-a="seek:10" aria-label="${t('fwd10')}">${img('btn-fwd10.svg',48)}</button>`}
 let lastLine=-2;
 function paintTranscript(force){const ts=app&&app.querySelector('#scr .ts[data-tx]');if(!ts)return;
- const ps=[...ts.querySelectorAll('p[data-s]')];let idx=-1;ps.forEach((p,i)=>{if(+p.dataset.s<=CLK.t+.2)idx=i});
+ const ps=[...ts.querySelectorAll('p[data-s]')];let idx=-1;ps.forEach((p,i)=>{if(+p.dataset.s<=CLK.t+.1)idx=i});
+ const now=ps[idx];if(now){const a=+now.dataset.s,b=+now.dataset.e;const ws=now.children,k=Math.ceil(Math.min(1,Math.max(0,(CLK.t-a)/Math.max(.5,b-a)))*ws.length);for(let j=0;j<ws.length;j++)ws[j].classList.toggle('w',j<k)}
  if(idx===lastLine&&!force)return;lastLine=idx;
- ps.forEach((p,i)=>p.classList.toggle('on',i<=idx));
- const target=ps[Math.max(0,idx)];if(target)ts.scrollTo({top:Math.max(0,target.offsetTop-90),behavior:force?'auto':'smooth'})}
+ ps.forEach((p,i)=>{p.classList.toggle('past',i<idx);p.classList.toggle('now',i===idx);p.classList.toggle('next',i>idx)});
+ const target=ps[Math.max(0,idx)];if(target)ts.scrollTo({top:Math.max(0,target.offsetTop-ts.clientHeight*.32),behavior:force?'auto':'smooth'})}
 let capLine=-2;const CAPS={};
 /* break each transcript line into one sentence (or short phrase) at a time, timed by length */
 function capsFor(v){if(CAPS[v.id])return CAPS[v.id];const lines=TX[v.id];if(!lines)return null;const out=[];
@@ -266,7 +276,7 @@ V.topic=function(){const x=topicOf(S.topic),name=t(x.id),c=doneCount(x.id),all=c
 
 V.player=function(){const i=CLK.k?CLK.i:0,tp=CLK.k?CLK.tp:'hurt',v=cur(),video=S.mode==='video',lines=TX[v.id];
  const f=CLK.dur?Math.min(1,CLK.t/CLK.dur):0;lastLine=-2;
- const card=lines?`<div class="ts" data-tx>${S.lang!=='en'?`<p class="bf-lang">${t('txLang')}</p>`:''}${lines.map(([s,l])=>`<p data-s="${s}">${esc(l)}</p>`).join('')}<p style="height:240px"></p></div><div class="fade"></div>`
+ const card=lines?`<div class="ts" data-tx>${S.lang!=='en'?`<p class="bf-lang">${t('txLang')}</p>`:''}<p class="bf-pad"></p>${(capsFor(v)||[]).map(([s,l],i,a)=>`<p class="bf-l" data-s="${s}" data-e="${i+1<a.length?a[i+1][0]:v.len}">${l.split(' ').map(w=>`<span>${esc(w)}</span>`).join(' ')}</p>`).join('')}<p class="bf-pad"></p></div><div class="bf-fadetop"></div><div class="fade"></div>`
   :`<div class="bf-notx"><b>${t('noTxT')}</b><span>${t('noTxB',esc(v.name))}</span></div><a class="bf-ytpill" href="${ytLink(v)}" target="_blank" rel="noopener" style="background:var(--nightfall);top:24px;left:24px;right:auto">${YTICON}YouTube</a>`;
  return `<div class="layer" style="background:${video?'linear-gradient(to top,#150100,#fb4238 159.48%)':'#fb4238'}">
  <div class="ph-head"><div class="l"><button data-a="back" aria-label="${t('close')}">${img('ic-chev-cream-24.svg',24,24,'down')}</button></div>
