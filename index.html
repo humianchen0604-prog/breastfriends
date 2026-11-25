@@ -386,7 +386,7 @@ const check=(c='#f0fdb5',s=14)=>`<svg width="${s}" height="${s}" viewBox="0 0 14
 function tabbar(a){return `<nav class="tabbar" aria-label="Main">
  ${a==='home'?`<button class="tab on" data-a="nav:home" aria-label="${t('home')}" aria-current="page">${img('tab-home-active.svg',44)}</button>`:`<button class="tab" data-a="nav:home" aria-label="${t('home')}">${img('tab-home-idle.svg',44)}</button>`}
  <button class="tab ${a==='search'?'on':''}" data-a="nav:search" aria-label="${t('search')}">${img(a==='search'?'ic-search-22-cream.svg':'ic-search-22.svg',22)}</button>
- ${a==='events'?`<button class="tab" data-a="nav:events" aria-label="${t('myScr')}" aria-current="page">${img('tab-calendar-active.svg',44)}</button>`:`<button class="tab" data-a="nav:events" aria-label="${t('myScr')}">${img('ic-calendar-22.svg',22)}</button>`}
+ ${a==='events'?`<button class="tab" data-a="nav:events" aria-label="${t('myScr')}" aria-current="page">${img('tab-calendar-active.svg',44)}</button>`:`<button class="tab" data-a="nav:events" aria-label="${t('myScr')}">${img('tab-calendar-idle.svg',44)}</button>`}
  </nav>`}
 function playbar(){const p=PEOPLE[0];return `<div class="playbar">
  <button class="info" data-a="player" aria-label="${L(p.title)}"><span class="av" style="width:40px;height:40px;background:${p.bg};position:absolute"><img src="assets/headshots.png" alt="" style="height:${p.crop[0]}%;left:${p.crop[1]}%;top:${p.crop[2]}%;width:${p.crop[3]}%"></span>
