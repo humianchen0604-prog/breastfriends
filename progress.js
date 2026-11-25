@@ -84,6 +84,11 @@ Object.assign(STR.pa,{
 ['https://www.youtube-nocookie.com','https://www.youtube.com','https://i.ytimg.com','https://www.google.com'].forEach(h=>{const l=document.createElement('link');l.rel='preconnect';l.href=h;l.crossOrigin='';document.head.appendChild(l)});
 /* more styles: custom video poster, YouTube pill, transcript card */
 document.head.insertAdjacentHTML('beforeend',`<style id="bf-progress-2">
+#scr .ctrl{justify-content:space-between;align-items:center;padding:0 30px;gap:0}
+.bf-mid{display:flex;align-items:center;gap:28px}
+.bf-skip{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:22px;transition:transform .16s ease,opacity .2s ease}
+.bf-skip:active{transform:scale(.92)}
+.bf-skip:disabled{opacity:.3;cursor:default}
 #bf-yt{position:absolute;left:23px;top:181px;width:342px;height:280px;border-radius:20px;overflow:hidden;background:#000;z-index:3;visibility:hidden}
 #bf-yt.on{visibility:visible}
 #bf-yt iframe{position:absolute;left:-259px;top:-111px;width:860px;height:484px;border:0;pointer-events:none}
@@ -121,9 +126,9 @@ document.head.insertAdjacentHTML('beforeend',`<style id="bf-progress-2">
 .bf-notx b{display:block;font-size:24px;font-weight:600;line-height:1.25;color:var(--nightfall)}
 .bf-notx span{display:block;margin-top:12px;font:400 15px/1.4 var(--in);color:var(--ink-slate)}
 </style>`);
-Object.assign(STR.en,{loading:'Loading video…',txLang:'Transcript in English',noTxT:'Captions for this story are on YouTube.',noTxB:n=>`Keep listening to ${n}, or open the video on YouTube to read along.`});
-Object.assign(STR.es,{loading:'Cargando video…',txLang:'Transcripción en inglés',noTxT:'Los subtítulos de esta historia están en YouTube.',noTxB:n=>`Sigue escuchando a ${n} o abre el video en YouTube para leer.`});
-Object.assign(STR.pa,{loading:'ਵੀਡੀਓ ਲੋਡ ਹੋ ਰਹੀ ਹੈ…',txLang:'ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ ਟ੍ਰਾਂਸਕ੍ਰਿਪਟ',noTxT:'ਇਸ ਕਹਾਣੀ ਦੀਆਂ ਕੈਪਸ਼ਨਾਂ YouTube ’ਤੇ ਹਨ।',noTxB:n=>`${n} ਨੂੰ ਸੁਣਦੇ ਰਹੋ, ਜਾਂ ਪੜ੍ਹਨ ਲਈ YouTube ’ਤੇ ਵੀਡੀਓ ਖੋਲ੍ਹੋ।`});
+Object.assign(STR.en,{prevS:'Previous story',nextS:'Next story',loading:'Loading video…',txLang:'Transcript in English',noTxT:'Captions for this story are on YouTube.',noTxB:n=>`Keep listening to ${n}, or open the video on YouTube to read along.`});
+Object.assign(STR.es,{prevS:'Historia anterior',nextS:'Siguiente historia',loading:'Cargando video…',txLang:'Transcripción en inglés',noTxT:'Los subtítulos de esta historia están en YouTube.',noTxB:n=>`Sigue escuchando a ${n} o abre el video en YouTube para leer.`});
+Object.assign(STR.pa,{prevS:'ਪਿਛਲੀ ਕਹਾਣੀ',nextS:'ਅਗਲੀ ਕਹਾਣੀ',loading:'ਵੀਡੀਓ ਲੋਡ ਹੋ ਰਹੀ ਹੈ…',txLang:'ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ ਟ੍ਰਾਂਸਕ੍ਰਿਪਟ',noTxT:'ਇਸ ਕਹਾਣੀ ਦੀਆਂ ਕੈਪਸ਼ਨਾਂ YouTube ’ਤੇ ਹਨ।',noTxB:n=>`${n} ਨੂੰ ਸੁਣਦੇ ਰਹੋ, ਜਾਂ ਪੜ੍ਹਨ ਲਈ YouTube ’ਤੇ ਵੀਡੀਓ ਖੋਲ੍ਹੋ।`});
 
 /* Transcripts: CDC videos (U.S. government works, public domain), from each video's own captions. Times in seconds. */
 const TX={
@@ -232,9 +237,12 @@ playbar=function(){const v=cur(),tp=CLK.k?CLK.tp:'hurt';
 
 function trackHTML(frac){const n=BARS.length,on=Math.floor(frac*(n-1));
  return BARS.map((h,i)=>`<i class="${i<=on?'p':''}" style="height:${h}px"></i>`).join('')+`<u style="left:${17+frac*306}px"></u>`}
-function ctrlHTML(){const done=CLK.k&&DONE[CLK.k]&&CLK.t>=CLK.dur;
- if(done)return `<span class="bf-donepill">${check('#1d2567',18)}${t('marked')}</span>`;
- return `<button data-a="seek:-10" aria-label="${t('back10')}">${img('btn-back10.svg',48)}</button><button data-a="toggle" aria-label="${t(S.playing?'pause':'play')}">${S.playing?img('btn-pause.svg',48):`<svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 8.5c0-2 2.2-3.3 4-2.2l24 15.5c1.6 1 1.6 3.4 0 4.4L18 41.7c-1.8 1.1-4-.2-4-2.2z" fill="#f4f1ec"/></svg>`}</button><button data-a="seek:10" aria-label="${t('fwd10')}">${img('btn-fwd10.svg',48)}</button>`}
+const PREV='<svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect x="5" y="6" width="3.2" height="18" rx="1.6" fill="#f4f1ec"/><path d="M24.5 7.9v14.2c0 1.5-1.7 2.4-2.9 1.6L11.3 16.6a1.9 1.9 0 0 1 0-3.2l10.3-7.1c1.2-.8 2.9.1 2.9 1.6z" fill="#f4f1ec"/></svg>';
+const NEXT='<svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect x="21.8" y="6" width="3.2" height="18" rx="1.6" fill="#f4f1ec"/><path d="M5.5 7.9v14.2c0 1.5 1.7 2.4 2.9 1.6l10.3-7.1a1.9 1.9 0 0 0 0-3.2L8.4 6.3c-1.2-.8-2.9.1-2.9 1.6z" fill="#f4f1ec"/></svg>';
+function ctrlHTML(){const done=CLK.k&&DONE[CLK.k]&&CLK.t>=CLK.dur,i=CLK.k?CLK.i:0,n=topicOf(CLK.k?CLK.tp:'hurt').n;
+ const prev=`<button class="bf-skip" data-a="prev" aria-label="${t('prevS')}">${PREV}</button>`,next=`<button class="bf-skip" data-a="next" aria-label="${t('nextS')}" ${i>=n-1?'disabled':''}>${NEXT}</button>`;
+ if(done)return `${prev}<span class="bf-mid"><span class="bf-donepill">${check('#1d2567',18)}${t('marked')}</span></span>${next}`;
+ return `${prev}<span class="bf-mid"><button data-a="seek:-10" aria-label="${t('back10')}">${img('btn-back10.svg',48)}</button><button data-a="toggle" aria-label="${t(S.playing?'pause':'play')}">${S.playing?img('btn-pause.svg',48):`<svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 8.5c0-2 2.2-3.3 4-2.2l24 15.5c1.6 1 1.6 3.4 0 4.4L18 41.7c-1.8 1.1-4-.2-4-2.2z" fill="#f4f1ec"/></svg>`}</button><button data-a="seek:10" aria-label="${t('fwd10')}">${img('btn-fwd10.svg',48)}</button></span>${next}`}
 let lastLine=-2;
 function paintTranscript(force){const ts=app&&app.querySelector('#scr .ts[data-tx]');if(!ts)return;
  const ps=[...ts.querySelectorAll('p[data-s]')];let idx=-1;ps.forEach((p,i)=>{if(+p.dataset.s<=CLK.t+.1)idx=i});
@@ -308,10 +316,13 @@ Object.assign(ACT,{
  toggle(){if(CLK.k&&CLK.t>=CLK.dur){CLK.t=0;S.playing=true;ytCmd('seekTo',[0,true]);render();return}S.playing=!S.playing;paint();syncYT();updPoster()},
  seek(v){if(!CLK.k)return;CLK.t=Math.min(CLK.dur,Math.max(0,CLK.t+(+v)));paint();paintTranscript(true);ytCmd('seekTo',[Math.floor(CLK.t),true]);if(CLK.t>=CLK.dur)finish()},
  steps(){openSheet('nextsteps')},
+ prev(){if(!CLK.k)return;if(CLK.t>3||CLK.i===0){CLK.t=0;S.playing=true;paint();ytCmd('seekTo',[0,true]);ytCmd('playVideo');lastLine=-2;paintTranscript(true);return}skipTo(CLK.i-1)},
+ next(){if(!CLK.k)return;if(CLK.i<topicOf(CLK.tp).n-1)skipTo(CLK.i+1)},
  call(v){toast(t('calling',v))},
  cedars(){closeSheet();toast(t('opCedars'))},
  pl(v){const[id,i]=v.split(':');if(id==='hurt')S.cur=+i;closeSheet();startClip('hurt',+i);render()}});
 
+function skipTo(i){const same=vidFor(CLK.tp,i).id===YT.id;CLK.t=CLK.dur;startClip(CLK.tp,i);S.playing=true;render();if(same){ytCmd('seekTo',[0,true]);ytCmd('playVideo')}}
 let finishing=null;
 function finish(){const k=CLK.k,tp=CLK.tp;if(finishing===k)return;finishing=k;const first=!DONE[k];DONE[k]=true;S.playing=false;CLK.t=CLK.dur;paint();ytCmd('pauseVideo');
  setTimeout(()=>{finishing=null;if(S.s!=='player'||CLK.k!==k)return;
