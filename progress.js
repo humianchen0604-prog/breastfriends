@@ -284,7 +284,7 @@ V.player=function(){const i=CLK.k?CLK.i:0,tp=CLK.k?CLK.tp:'hurt',v=cur(),video=S
  <div class="ph-head"><div class="l"><button data-a="back" aria-label="${t('close')}">${img('ic-chev-cream-24.svg',24,24,'down')}</button></div>
  <button class="switch press" data-a="mode" style="background:${video?'rgba(255,255,255,.1)':'#fe6057'}">${img(video?'ic-audio.svg':'ic-video.svg',20)}${t(video?'toAudio':'toVideo')}</button>
  <div class="r"><button data-a="sheet:playlist" aria-label="${t('list')}">${img('ic-list.svg',24)}</button><button data-a="share:${i}" aria-label="${t('share')}">${img('ic-share.svg',24)}</button></div></div>
- ${video?`<div class="vid bf-vid bf-gray">${isStatic()?`<img src="${thumb(v.id)}" alt="">`:''}${isStatic()?`<span class="bf-ytpill">${YTICON}YouTube</span>`:''}</div>`:`<div class="ts-card"><img class="q" src="assets/shape-overlay.svg" alt="">${card}</div>`}
+ ${video?`<div class="vid bf-vid bf-gray">${isStatic()?`<img src="${thumb(v.id)}" alt="">`:''}${isStatic()?`<span class="bf-ytpill">${YTICON}YouTube</span>`:''}</div>`:`<div class="ts-card">${card}</div>`}
  <div class="pinfo"><h2>${t(tp==='cost'?'costQ':tp)}</h2><div>${vav(v,24)}<p><b>${esc(v.name)}</b> <span>· ${L(v.role)}</span></p></div></div>
  <div class="track" role="slider" aria-valuemin="0" aria-valuemax="${CLK.dur}" aria-valuenow="${Math.floor(CLK.t)}">${trackHTML(f)}</div>
  <div class="times"><span>${fmt(CLK.t)}</span><span>−${fmt(CLK.dur-CLK.t)}</span></div>
