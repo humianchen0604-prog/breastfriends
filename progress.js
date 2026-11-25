@@ -81,14 +81,21 @@ Object.assign(STR.pa,{
  cedars:'Cedars‑Sinai ਨਾਲ ਮੈਮੋਗ੍ਰਾਮ ਬੁੱਕ ਕਰੋ',later:'ਫਿਰ ਕਦੇ',opCedars:'Cedars-Sinai ਬੁਕਿੰਗ ਖੁੱਲ੍ਹ ਰਹੀ ਹੈ',calling:n=>`${n} ’ਤੇ ਕਾਲ ਹੋ ਰਹੀ ਹੈ`});
 
 
+['https://www.youtube-nocookie.com','https://www.youtube.com','https://i.ytimg.com','https://www.google.com'].forEach(h=>{const l=document.createElement('link');l.rel='preconnect';l.href=h;l.crossOrigin='';document.head.appendChild(l)});
 /* more styles: custom video poster, YouTube pill, transcript card */
 document.head.insertAdjacentHTML('beforeend',`<style id="bf-progress-2">
 #bf-yt{position:absolute;left:23px;top:181px;width:342px;height:280px;border-radius:20px;overflow:hidden;background:#000;z-index:3;visibility:hidden}
 #bf-yt.on{visibility:visible}
-#bf-yt iframe{position:absolute;left:-239px;top:-91px;width:820px;height:462px;border:0;pointer-events:none}
+#bf-yt iframe{position:absolute;left:-259px;top:-111px;width:860px;height:484px;border:0;pointer-events:none}
 #bf-yt .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .35s ease}
+.bf-ph{background:linear-gradient(110deg,#4a4648 30%,#5a5658 50%,#4a4648 70%);background-size:220% 100%;animation:bfshim 1.6s linear infinite}
+@keyframes bfshim{from{background-position:120% 0}to{background-position:-120% 0}}
+.bf-load{position:absolute;left:0;right:0;top:44%;display:flex;align-items:center;justify-content:center;gap:8px;color:rgba(244,241,236,.75);font:600 14px var(--in)}
+.bf-load i{width:14px;height:14px;border-radius:50%;border:2px solid rgba(244,241,236,.3);border-top-color:var(--sand);animation:bfspin .8s linear infinite}
+@keyframes bfspin{to{transform:rotate(360deg)}}
+.bf-vid.bf-gray{background:#4a4648}
 #bf-yt.playing .poster{opacity:0}
-#bf-yt .bf-cap{position:absolute;left:0;right:0;bottom:0;padding:48px 16px 14px;background:linear-gradient(to top,rgba(0,0,0,.62),rgba(0,0,0,0));pointer-events:none;opacity:0;transition:opacity .25s ease}
+#bf-yt .bf-cap{z-index:1;position:absolute;left:0;right:0;bottom:0;padding:48px 16px 14px;background:linear-gradient(to top,rgba(0,0,0,.62),rgba(0,0,0,0));pointer-events:none;opacity:0;transition:opacity .25s ease}
 #bf-yt .bf-cap.on{opacity:1}
 #bf-yt .bf-cap p{text-align:center;color:var(--sand);font:700 16px/1.3 var(--pg);text-wrap:balance}
 .bf-ytpill{position:absolute;right:12px;top:12px;height:32px;padding:0 12px 0 9px;display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;font:600 13px var(--in);text-decoration:none;white-space:nowrap;z-index:2}
@@ -103,9 +110,9 @@ document.head.insertAdjacentHTML('beforeend',`<style id="bf-progress-2">
 .bf-notx b{display:block;font-size:24px;font-weight:600;line-height:1.25;color:var(--nightfall)}
 .bf-notx span{display:block;margin-top:12px;font:400 15px/1.4 var(--in);color:var(--ink-slate)}
 </style>`);
-Object.assign(STR.en,{txLang:'Transcript in English',noTxT:'Captions for this story are on YouTube.',noTxB:n=>`Keep listening to ${n}, or open the video on YouTube to read along.`});
-Object.assign(STR.es,{txLang:'Transcripción en inglés',noTxT:'Los subtítulos de esta historia están en YouTube.',noTxB:n=>`Sigue escuchando a ${n} o abre el video en YouTube para leer.`});
-Object.assign(STR.pa,{txLang:'ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ ਟ੍ਰਾਂਸਕ੍ਰਿਪਟ',noTxT:'ਇਸ ਕਹਾਣੀ ਦੀਆਂ ਕੈਪਸ਼ਨਾਂ YouTube ’ਤੇ ਹਨ।',noTxB:n=>`${n} ਨੂੰ ਸੁਣਦੇ ਰਹੋ, ਜਾਂ ਪੜ੍ਹਨ ਲਈ YouTube ’ਤੇ ਵੀਡੀਓ ਖੋਲ੍ਹੋ।`});
+Object.assign(STR.en,{loading:'Loading video…',txLang:'Transcript in English',noTxT:'Captions for this story are on YouTube.',noTxB:n=>`Keep listening to ${n}, or open the video on YouTube to read along.`});
+Object.assign(STR.es,{loading:'Cargando video…',txLang:'Transcripción en inglés',noTxT:'Los subtítulos de esta historia están en YouTube.',noTxB:n=>`Sigue escuchando a ${n} o abre el video en YouTube para leer.`});
+Object.assign(STR.pa,{loading:'ਵੀਡੀਓ ਲੋਡ ਹੋ ਰਹੀ ਹੈ…',txLang:'ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ ਟ੍ਰਾਂਸਕ੍ਰਿਪਟ',noTxT:'ਇਸ ਕਹਾਣੀ ਦੀਆਂ ਕੈਪਸ਼ਨਾਂ YouTube ’ਤੇ ਹਨ।',noTxB:n=>`${n} ਨੂੰ ਸੁਣਦੇ ਰਹੋ, ਜਾਂ ਪੜ੍ਹਨ ਲਈ YouTube ’ਤੇ ਵੀਡੀਓ ਖੋਲ੍ਹੋ।`});
 
 /* Transcripts: CDC videos (U.S. government works, public domain), from each video's own captions. Times in seconds. */
 const TX={
@@ -162,7 +169,7 @@ const VIDEOS={
 /* ---------- progress state (in memory: a reload starts a fresh demo) ---------- */
 const DONE={};
 const CLK={k:null,tp:'hurt',i:0,t:0,dur:30};
-let JUST=null,YT={id:null,state:-1,last:0,since:0,frame:null};
+let JUST=null,YT={id:null,state:-1,last:0,since:0,frame:null,ready:false,born:0,q:[]};
 const key=(tp,i)=>tp+':'+i;
 const fmt=s=>{s=Math.max(0,Math.floor(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 const topicOf=id=>TOPICS.find(o=>o.id===id)||TOPICS[0];
@@ -181,19 +188,22 @@ function startClip(tp,i){const k=key(tp,i);
  S.topic=tp;S.pid=i;S.playing=true}
 
 /* ---------- one persistent YouTube player, so sound keeps going across video and transcript views ---------- */
-function ytCmd(func,args){const f=YT.frame;if(f&&f.contentWindow)f.contentWindow.postMessage(JSON.stringify({event:'command',func,args:args||[],id:'bf',channel:'widget'}),'*')}
+function ytSend(func,args){const f=YT.frame;if(f&&f.contentWindow)f.contentWindow.postMessage(JSON.stringify({event:'command',func,args:args||[],id:'bf',channel:'widget'}),'*')}
+function ytCmd(func,args){if(!YT.ready){YT.q.push([func,args]);return}ytSend(func,args)}
+function ytReady(){if(YT.ready)return;YT.ready=true;const q=YT.q;YT.q=[];q.forEach(([f,a])=>ytSend(f,a))}
 function ytBox(){if(!app)return null;let b=app.querySelector('#bf-yt');
  if(!b){b=document.createElement('div');b.id='bf-yt';app.insertBefore(b,app.querySelector('#sh'));YT.id=null;YT.frame=null}return b}
 function syncYT(){const b=app&&app.querySelector('#bf-yt');
  if(!S||S.s!=='player'||isStatic()||!CLK.k){if(b){b.classList.remove('on');if(YT.frame)ytCmd('pauseVideo')}return}
  const box=ytBox(),v=cur();box.classList.toggle('on',S.mode==='video');
- if(YT.id!==v.id){YT.id=v.id;YT.state=-1;capLine=-2;
-  box.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${v.id}?autoplay=${S.playing?1:0}&controls=0&disablekb=1&fs=0&iv_load_policy=3&playsinline=1&rel=0&enablejsapi=1&start=${Math.floor(CLK.t)}&origin=${encodeURIComponent(location.origin)}" title="${esc(v.name)}" allow="autoplay; encrypted-media"></iframe><img class="poster" src="${thumb(v.id)}" alt=""><div class="bf-cap"><p></p></div><a class="bf-ytpill" href="${ytLink(v)}" target="_blank" rel="noopener">${YTICON}YouTube</a>`;
+ if(YT.id!==v.id){YT.id=v.id;YT.state=-1;YT.ready=false;YT.q=[];YT.born=Date.now();capLine=-2;
+  box.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${v.id}?autoplay=${S.playing?1:0}&controls=0&disablekb=1&fs=0&iv_load_policy=3&playsinline=1&rel=0&enablejsapi=1&start=${Math.floor(CLK.t)}&origin=${encodeURIComponent(location.origin)}" title="${esc(v.name)}" allow="autoplay; encrypted-media"></iframe><div class="poster bf-ph"><span class="bf-load"><i></i>${t('loading')}</span></div><div class="bf-cap"><p></p></div><a class="bf-ytpill" href="${ytLink(v)}" target="_blank" rel="noopener">${YTICON}YouTube</a>`;
   YT.frame=box.querySelector('iframe');
-  YT.frame.addEventListener('load',()=>{let n=0;const h=setInterval(()=>{if(YT.state!==-1||n++>20){clearInterval(h);return}YT.frame&&YT.frame.contentWindow.postMessage(JSON.stringify({event:'listening',id:'bf',channel:'widget'}),'*')},250)})}
+  YT.frame.addEventListener('load',()=>{let n=0;const h=setInterval(()=>{if(YT.ready||n++>40){clearInterval(h);return}YT.frame&&YT.frame.contentWindow.postMessage(JSON.stringify({event:'listening',id:'bf',channel:'widget'}),'*')},250)})}
  else ytCmd(S.playing?'playVideo':'pauseVideo');
  const pill=box.querySelector('.bf-ytpill');if(pill)pill.href=ytLink(v)}
 addEventListener('message',e=>{if(!YT.frame||e.source!==YT.frame.contentWindow)return;let d;try{d=typeof e.data==='string'?JSON.parse(e.data):e.data}catch(_){return}
+ if(d&&(d.event==='onReady'||d.event==='infoDelivery'||d.event==='initialDelivery'))ytReady();
  const info=d&&d.info;if(!info)return;
  if(typeof info.playerState==='number'){if(info.playerState===1&&YT.state!==1)YT.since=Date.now();YT.state=info.playerState;updPoster();if(YT.state===0&&CLK.t<CLK.dur)finish()}
  if(typeof info.currentTime==='number'&&CLK.k&&YT.id===cur().id&&YT.state===1){YT.last=Date.now();CLK.t=Math.min(CLK.dur,info.currentTime);paint();if(CLK.t>=CLK.dur-.4)finish()}});
@@ -262,7 +272,7 @@ V.player=function(){const i=CLK.k?CLK.i:0,tp=CLK.k?CLK.tp:'hurt',v=cur(),video=S
  <div class="ph-head"><div class="l"><button data-a="back" aria-label="${t('close')}">${img('ic-chev-cream-24.svg',24,24,'down')}</button></div>
  <button class="switch press" data-a="mode" style="background:${video?'rgba(255,255,255,.1)':'#fe6057'}">${img(video?'ic-audio.svg':'ic-video.svg',20)}${t(video?'toAudio':'toVideo')}</button>
  <div class="r"><button data-a="sheet:playlist" aria-label="${t('list')}">${img('ic-list.svg',24)}</button><button data-a="share:${i}" aria-label="${t('share')}">${img('ic-share.svg',24)}</button></div></div>
- ${video?`<div class="vid bf-vid"><img src="${thumb(v.id)}" alt="">${isStatic()?`<span class="bf-ytpill">${YTICON}YouTube</span>`:''}</div>`:`<div class="ts-card"><img class="q" src="assets/shape-overlay.svg" alt="">${card}</div>`}
+ ${video?`<div class="vid bf-vid bf-gray">${isStatic()?`<img src="${thumb(v.id)}" alt="">`:''}${isStatic()?`<span class="bf-ytpill">${YTICON}YouTube</span>`:''}</div>`:`<div class="ts-card"><img class="q" src="assets/shape-overlay.svg" alt="">${card}</div>`}
  <div class="pinfo"><h2>${t(tp==='cost'?'costQ':tp)}</h2><div>${vav(v,24)}<p><b>${esc(v.name)}</b> <span>· ${L(v.role)}</span></p></div></div>
  <div class="track" role="slider" aria-valuemin="0" aria-valuemax="${CLK.dur}" aria-valuenow="${Math.floor(CLK.t)}">${trackHTML(f)}</div>
  <div class="times"><span>${fmt(CLK.t)}</span><span>−${fmt(CLK.dur-CLK.t)}</span></div>
@@ -301,6 +311,7 @@ function finish(){const k=CLK.k,tp=CLK.tp;if(finishing===k)return;finishing=k;co
 /* clock: follows the YouTube player when it reports time, ticks on its own otherwise */
 setInterval(()=>{if(!S||S.s!=='player'||!S.playing||!CLK.k||CLK.t>=CLK.dur||isStatic())return;
  updPoster();if(Date.now()-YT.last<1200)return;
+ if(YT.frame&&YT.id===cur().id&&(YT.ready||Date.now()-YT.born<8000))return;
  CLK.t=Math.min(CLK.dur,CLK.t+.25);paint();if(CLK.t>=CLK.dur)finish()},250);
 
 document.addEventListener('click',e=>{const tr=e.target.closest('#scr .track');if(!tr||!CLK.k)return;
